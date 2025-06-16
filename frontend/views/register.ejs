@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registro</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+  <h1>Registro de Usuario</h1>
+
+  <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+    <p>Por favor, corrige los siguientes errores:</p>
+    <ul>
+      <% errors.forEach(function(error) { %>
+        <li><%= error.msg %></li>
+      <% }); %>
+    </ul>
+  <% } %>
+
+  <% if (typeof mensaje !== 'undefined' && mensaje) { %>
+    <p><%= mensaje %></p>
+  <% } %>
+  <div class="card">
+    <form method="POST" action="/registro" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <label>Nombre:</label>
+      <input type="text" name="nombre" value="<%= typeof oldInput !== 'undefined' ? oldInput.nombre : '' %>" required><br>
+
+      <label>Correo:</label>
+      <input type="email" name="correo" value="<%= typeof oldInput !== 'undefined' ? oldInput.correo : '' %>" required><br>
+
+      <label>Contraseña:</label>
+      <input type="password" name="contrasena" required><br>
+      <small>La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas, números y símbolos.</small>
+
+      <p>Selecciona una imagen de perfil:</p>
+      <div class="imagenes-container">
+        <% imagenes.forEach((img, i) => { %>
+          <label>
+            <input type="radio" name="imagenSeleccionada" value="<%= img %>" <%= (typeof oldInput !== 'undefined' && oldInput.imagenSeleccionada === img) ? 'checked' : '' %>>
+            <img src="<%= img %>" width="80">
+          </label>
+        <% }) %>
+      </div>
+      <p>O sube una imagen personalizada (Máx. 5MB, solo JPG, JPEG, PNG, GIF):</p>
+      <input type="file" name="fotoPerfil" accept="image/*">
+
+      <br><br>
+      <button type="submit">Registrarse</button>
+    </form>
+  </div>
+  <p>¿Ya tienes cuenta? <a href="/">Inicia sesión aquí</a></p>
+</body>
+</html>

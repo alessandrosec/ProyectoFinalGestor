@@ -1,0 +1,142 @@
+/* Paleta base */
+:root {
+  --color-bg: #31231D;
+  --color-panel: #B86B57;
+  --color-accent: #ED7441;
+  --color-dark: #3E2E2E;
+  --color-border: #5A3A2D;
+  --color-light: #E0F4D4;
+  --color-text: #FFFFFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Contenedor central */
+.card {
+  background-color: var(--color-panel);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  padding: 30px 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.card h1, .card h2 {
+  color: var(--color-dark);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Formularios */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin: 10px 0 5px;
+  font-weight: bold;
+  color: var(--color-dark);
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="file"] {
+  padding: 10px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-light);
+  color: var(--color-dark);
+}
+
+input[type="radio"] {
+  margin-right: 5px;
+}
+
+button,
+input[type="submit"] {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background-color: #d85f2b;
+}
+
+small {
+  font-size: 0.85em;
+  color: var(--color-dark);
+}
+
+.mensaje {
+  background-color: #fff0f0;
+  color: #a00;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+/* Layout imágenes */
+.imagenes-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.imagenes-container label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.imagenes-container img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  transition: border 0.2s;
+}
+
+.imagenes-container input[type="radio"]:checked + img {
+  border: 2px solid var(--color-accent);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+  }
+
+  .imagenes-container img {
+    width: 50px;
+    height: 50px;
+  }
+}

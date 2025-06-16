@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Iniciar Sesión</h1>
+    <% // BLOQUE PARA MOSTRAR MENSAJES %>
+    <% if (typeof mensaje !== 'undefined' && mensaje) { %>
+      <p><%= mensaje %></p>
+    <% } %>
+    <form method="POST" action="/login">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <label>Correo:</label>
+      <input type="email" name="correo" required>
+      <br>
+      <label>Contraseña:</label>
+      <input type="password" name="contrasena" required>
+      <br>
+      <button type="submit">Entrar</button>
+    </form>
+    <p>¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
+    <p>¿Olvidaste tu contraseña? <a href="/recuperar">Recupérala aquí</a></p>
+  </div>
+</body>
+</html>

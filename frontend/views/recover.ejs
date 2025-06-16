@@ -1,0 +1,22 @@
+<h2>Recuperar Contraseña</h2>
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+    <p>Por favor, corrige los siguientes errores:</p>
+    <ul>
+        <% errors.forEach(function(error) { %>
+            <li><%= error.msg %></li>
+        <% }); %>
+    </ul>
+<% } %>
+
+<% if (typeof mensaje !== 'undefined' && mensaje) { %>
+    <p><%= mensaje %></p>
+<% } %>
+<div class="card">
+    <form action="/enviar-recuperacion" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label>Correo:</label>
+        <input type="email" name="correo" required>
+        <button type="submit">Enviar enlace</button>
+    </form>
+</div>
+<p><a href="/">Volver al inicio de sesión</a></p>
