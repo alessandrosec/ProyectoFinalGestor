@@ -10,8 +10,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true })); //Permite leer los datos de los formularios
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); //Habilita la carpeta para imagenes y archivos estaticos
-app.use(generateCsrfToken);
+app.use(express.static(path.join(__dirname, 'frontend', 'public'))); //Habilita la carpeta para imagenes y archivos estaticos
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
@@ -26,6 +25,7 @@ app.use(session({
     sameSite: 'Lax' // Previene ataques CSRF
   }
 }));
+app.use(generateCsrfToken);
 
 // Configura el motor de veista para los archivos .ejs
 app.set('view engine', 'ejs');
