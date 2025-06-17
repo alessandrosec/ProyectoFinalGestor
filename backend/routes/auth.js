@@ -7,6 +7,7 @@ const { verifyCsrfToken } = require('../middlewares/csrf');
 
 router.get('/', authController.getLogin); // Formulario del login
 router.get('/registro', authController.getRegister); // Formulario del registro
+router.get('/index', authController.getIndex) //Pagina de inicio
 router.get('/recuperar', authController.getRecoverForm); // Formulario recuperar contraseña
 router.get('/reset-password/:token', authController.getResetForm); // Formulario nueva_contraseña
 

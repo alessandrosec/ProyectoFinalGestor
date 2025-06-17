@@ -101,8 +101,16 @@ exports.getLogin = (req, res) => {
 exports.getRegister = (req, res) => {
   // Lista de imágenes predeterminadas (del 1 al 11)
   const imagenes = Array.from({ length: 12 }, (_, i) => `/images/${i + 1}.png`);
-  res.render('register', { imagenes });
+  res.render('register', {
+  imagenes,
+  oldInput: {}, 
+  mensaje: null
+});
 };
+
+exports.getIndex = (req, res) => {
+    res.render('Index')
+}
 
 //Valida al usuario desde la base de datos
 exports.postLogin = async (req, res, next) => {
@@ -143,7 +151,7 @@ exports.postLogin = async (req, res, next) => {
 
         loginLimiter.resetAttempts(correo);
 
-        res.redirect('/dashboard');
+        res.redirect('/index');
     } catch (error) {
         console.error("Error en postLogin:", error); // Mensaje específico de en donde se produce el error
         req.session.mensaje = 'Error interno del servidor. Inténtalo de nuevo.'; // Mensaje genérico para el usuario
