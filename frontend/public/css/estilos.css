@@ -140,3 +140,495 @@ small {
     height: 50px;
   }
 }
+
+/* 
+===============================================
+SISTEMA DE GESTIÓN DE TAREAS - ESTILOS CSS
+===============================================
+Paleta de colores basada en las especificaciones del proyecto:
+- #B67253 (Marrón claro)
+- #8B6857 (Marrón medio) 
+- #E07441 (Naranja)
+- #61534D (Marrón oscuro)
+- #36312E (Negro/Marrón muy oscuro)
+- #332823 (Negro base)
+===============================================
+*/
+
+/* ===== VARIABLES CSS PERSONALIZADAS ===== */
+:root {
+    /* Paleta de colores principal */
+    --color-primary: #E07441;        /* Naranja principal */
+    --color-secondary: #B67253;      /* Marrón claro */
+    --color-accent: #8B6857;         /* Marrón medio */
+    --color-dark: #61534D;           /* Marrón oscuro */
+    --color-darker: #36312E;         /* Negro/Marrón muy oscuro */
+    --color-darkest: #332823;        /* Negro base */
+    
+    /* Colores complementarios */
+    --color-light: #F8F9FA;          /* Blanco suave */
+    --color-white: #FFFFFF;          /* Blanco puro */
+    --color-muted: #6C757D;          /* Gris medio */
+    --color-border: #DEE2E6;         /* Gris claro para bordes */
+    
+    /* Estados */
+    --color-success: #198754;        /* Verde para éxito */
+    --color-warning: #FFC107;        /* Amarillo para advertencias */
+    --color-danger: #DC3545;         /* Rojo para errores */
+    --color-info: #0DCAF0;           /* Azul para información */
+    
+    /* Sombras y efectos */
+    --shadow-sm: 0 0.125rem 0.25rem rgba(54, 40, 35, 0.075);
+    --shadow-md: 0 0.5rem 1rem rgba(54, 40, 35, 0.15);
+    --shadow-lg: 0 1rem 3rem rgba(54, 40, 35, 0.175);
+    
+    /* Transiciones */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.3s ease-in-out;
+    --transition-slow: 0.5s ease-in-out;
+}
+
+/* ===== RESET Y CONFIGURACIÓN BASE ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--color-light) 0%, #F1F3F4 100%);
+    color: var(--color-darkest);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container-fluid {
+    height: 100vh;
+    padding: 0;
+}
+
+/* ===== HEADER PRINCIPAL ===== */
+.header-section {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: var(--color-white);
+    box-shadow: var(--shadow-md);
+    border-bottom: 3px solid var(--color-accent);
+}
+
+.main-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ===== BARRA DE BÚSQUEDA ===== */
+.search-container {
+    min-width: 250px;
+}
+
+.search-input {
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.9);
+    color: var(--color-darkest);
+    font-size: 0.9rem;
+    transition: var(--transition-normal);
+}
+
+.search-input:focus {
+    border-color: var(--color-white);
+    background: var(--color-white);
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+}
+
+.search-icon {
+    background: rgba(255,255,255,0.9);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: var(--color-accent);
+}
+
+/* ===== BOTÓN CREAR PROYECTO ===== */
+.btn-create-project {
+    background: var(--color-white);
+    color: var(--color-primary);
+    border: 2px solid var(--color-white);
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-create-project:hover {
+    background: var(--color-light);
+    color: var(--color-darker);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.main-content {
+    height: calc(100vh - 80px);
+    margin: 0;
+}
+
+/* ===== SIDEBAR (PROYECTOS TERMINADOS) ===== */
+.sidebar-section {
+    background: var(--color-white);
+    border-right: 3px solid var(--color-border);
+    padding: 1.5rem;
+    overflow-y: auto;
+    box-shadow: inset -5px 0 10px rgba(0,0,0,0.05);
+}
+
+/* ===== SECCIÓN PRINCIPAL (PROYECTOS ACTIVOS) ===== */
+.main-section {
+    background: var(--color-light);
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+/* ===== TÍTULOS DE SECCIÓN ===== */
+.section-title {
+    color: var(--color-darker);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--color-primary);
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--color-accent);
+}
+
+/* ===== CONTENEDORES DE PROYECTOS ===== */
+.projects-list {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+}
+
+/* ===== TARJETAS DE PROYECTOS TERMINADOS ===== */
+.completed-project-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    transition: var(--transition-normal);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.completed-project-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--color-success);
+    transition: var(--transition-fast);
+}
+
+.completed-project-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-success);
+}
+
+.completed-project-card:hover::before {
+    width: 6px;
+}
+
+.completed-project-name {
+    font-weight: 600;
+    color: var(--color-darker);
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    text-decoration: none;
+    display: block;
+}
+
+.completed-project-name:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.completed-project-id {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    font-family: 'Courier New', monospace;
+}
+
+/* ===== TARJETAS DE PROYECTOS ACTIVOS ===== */
+.active-project-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: var(--transition-normal);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.active-project-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    transition: var(--transition-fast);
+}
+
+.active-project-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+.active-project-card:hover::before {
+    width: 8px;
+}
+
+/* ===== CONTENIDO DE TARJETAS ACTIVAS ===== */
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.project-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-darker);
+    margin: 0;
+    text-decoration: none;
+}
+
+.project-name:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.project-dates {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.date-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--color-light);
+    border-radius: 6px;
+    min-width: 100px;
+}
+
+.date-label {
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.date-value {
+    font-size: 0.9rem;
+    color: var(--color-darker);
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+/* ===== USUARIOS EN PROYECTO ===== */
+.project-users {
+    margin-bottom: 1rem;
+}
+
+.users-label {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.users-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.user-avatar {
+    position: relative;
+    cursor: pointer;
+}
+
+.user-image {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary);
+    transition: var(--transition-fast);
+    object-fit: cover;
+}
+
+.user-image:hover {
+    transform: scale(1.1);
+    border-color: var(--color-accent);
+}
+
+/* ===== DESCRIPCIÓN DEL PROYECTO (TOOLTIP) ===== */
+.project-description-tooltip {
+    max-width: 300px;
+}
+
+/* ===== ESTADOS DE CARGA ===== */
+.loading-spinner {
+    color: var(--color-primary);
+}
+
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* ===== MENSAJES VACÍOS ===== */
+.no-projects-message {
+    background: var(--color-white);
+    border: 2px dashed var(--color-border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+
+.no-projects-message i {
+    color: var(--color-muted);
+}
+
+/* ===== SCROLLBAR PERSONALIZADO ===== */
+.projects-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.projects-list::-webkit-scrollbar-track {
+    background: var(--color-light);
+    border-radius: 3px;
+}
+
+.projects-list::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 3px;
+}
+
+.projects-list::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+}
+
+.toast-header {
+    background: var(--color-light);
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* ===== RESPONSIVE UTILITIES ===== */
+@media (max-width: 768px) {
+    .search-container {
+        min-width: 200px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .main-title {
+        font-size: 1.5rem;
+    }
+    
+    .sidebar-section {
+        padding: 1rem;
+    }
+    
+    .main-section {
+        padding: 1rem;
+    }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ===== EFECTOS DE HOVER MEJORADOS ===== */
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* ===== DESTACADO DE BÚSQUEDA ===== */
+.search-highlight {
+    background-color: rgba(224, 116, 65, 0.3);
+    font-weight: bold;
+    padding: 0.1rem 0.2rem;
+    border-radius: 3px;
+}
+
+/* ===== ESTADOS DE CONEXIÓN ===== */
+.connection-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 1050;
+    transition: var(--transition-normal);
+}
+
+.connection-status.connected {
+    background: var(--color-success);
+    color: var(--color-white);
+}
+
+.connection-status.disconnected {
+    background: var(--color-danger);
+    color: var(--color-white);
+}
+
+.connection-status.connecting {
+    background: var(--color-warning);
+    color: var(--color-darkest);
+}
