@@ -2,12 +2,24 @@
  * ===============================================
  * API.JS - FUNCIONES DE CONEXIÓN CON BACKEND (MEJORADO)
  * ===============================================
+<<<<<<< HEAD
  * MEJORAS APLICADAS:
  * 1. Compatibilidad con más navegadores (AbortController)
  * 2. Mejor manejo de timeouts
  * 3. Funciones de validación mejoradas
  * 4. Caché local implementado
  * 5. Retry logic para conexiones fallidas
+=======
+ * Este archivo contiene todas las funciones para comunicarse
+ * con el backend del sistema de gestión de tareas.
+ * 
+ * NOTA PARA BACKEND
+ :
+ * - Todos los endpoints están preparados para el formato REST
+ * - Se incluye manejo de errores y estados de carga
+ * - Los datos se envían/reciben en formato JSON
+ * - Se incluye autenticación básica preparada
+>>>>>>> cede44a408f8d2db236b6ffe601d294c498f9d2b
  * ===============================================
  */
 
@@ -1163,3 +1175,4 @@ window.apiDebug = {
 
 console.log('API.js mejorado cargado completamente');
 console.log('Funciones de debug disponibles en window.apiDebug');
+window.mockApiResponse = mockApiResponse;
