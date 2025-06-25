@@ -1,11 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sistema de Gestión de Tareas</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"
 </head>
 <body>
-    <h1>Bienvenido</h1>
+    <!-- Contenedor principal de la aplicación -->
+    <div class="container-fluid h-100">
+        <!-- Header con barra de búsqueda y botón crear proyecto -->
+        <header class="row header-section py-3">
+            <div class="col-md-8">
+                <h1 class="main-title mb-0">
+                    <i class="bi bi-kanban-fill me-2"></i>
+                    Gestor de Proyectos
+                </h1>
+            </div>
+            <div class="col-md-4 d-flex justify-content-end align-items-center">
+                <!-- Barra de búsqueda en tiempo real -->
+                <div class="search-container me-3">
+                    <div class="input-group">
+                        <span class="input-group-text search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            class="form-control search-input" 
+                            id="searchInput"
+                            placeholder="Buscar por nombre o ID..."
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+                <!-- Botón crear proyecto -->
+                <button class="btn btn-create-project" id="createProjectBtn">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Crear Proyecto
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="row main-content">
+            <!-- Columna izquierda: Proyectos terminados -->
+            <aside class="col-md-3 sidebar-section">
+                <div class="projects-section completed-projects">
+                    <h3 class="section-title">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        Proyectos Terminados
+                    </h3>
+                    
+                    <!-- Lista de proyectos terminados -->
+                    <div class="projects-list" id="completedProjectsList">
+                        <!-- Loading spinner inicial -->
+                        <div class="loading-spinner text-center py-4" id="completedLoading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenedor para proyectos terminados -->
+                        <div class="completed-projects-container" id="completedProjectsContainer">
+                            <!-- Los proyectos se cargarán dinámicamente aquí -->
+                        </div>
+                        
+                        <!-- Mensaje cuando no hay proyectos -->
+                        <div class="no-projects-message d-none" id="noCompletedProjects">
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                                <p>No hay proyectos terminados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Columna central: Proyectos en proceso -->
+            <section class="col-md-9 main-section">
+                <div class="projects-section active-projects">
+                    <h3 class="section-title">
+                        <i class="bi bi-clock-fill me-2"></i>
+                        Proyectos en Proceso
+                    </h3>
+                    
+                    <!-- Lista de proyectos en proceso -->
+                    <div class="projects-list" id="activeProjectsList">
+                        <!-- Loading spinner inicial -->
+                        <div class="loading-spinner text-center py-4" id="activeLoading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando proyectos...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenedor para proyectos activos -->
+                        <div class="active-projects-container" id="activeProjectsContainer">
+                            <!-- Los proyectos se cargarán dinámicamente aquí -->
+                        </div>
+                        
+                        <!-- Mensaje cuando no hay proyectos -->
+                        <div class="no-projects-message d-none" id="noActiveProjects">
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-kanban display-1 d-block mb-3"></i>
+                                <h4>No hay proyectos en proceso</h4>
+                                <p>Comienza creando tu primer proyecto</p>
+                                <button class="btn btn-outline-primary" id="createFirstProject">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Crear Primer Proyecto
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Mensaje cuando no se encuentran resultados de búsqueda -->
+                        <div class="no-search-results d-none" id="noSearchResults">
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-search display-1 d-block mb-3"></i>
+                                <h4>No se encontraron resultados</h4>
+                                <p>Intenta con otros términos de búsqueda</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para crear/editar proyecto (se implementará en futuras versiones) -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectModalLabel">Crear Nuevo Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario de proyecto se implementará aquí -->
+                    <p class="text-center py-4">
+                        <i class="bi bi-tools display-4 d-block mb-2"></i>
+                        Formulario de creación en desarrollo...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="mainToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+                <strong class="me-auto">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Mensaje aquí
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts de la aplicación -->
+    <script src="api.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
