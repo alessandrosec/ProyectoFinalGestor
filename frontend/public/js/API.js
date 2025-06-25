@@ -5,7 +5,8 @@
  * Este archivo contiene todas las funciones para comunicarse
  * con el backend del sistema de gestión de tareas.
  * 
- * NOTA PARA ERICK O EMILIO:
+ * NOTA PARA BACKEND
+ :
  * - Todos los endpoints están preparados para el formato REST
  * - Se incluye manejo de errores y estados de carga
  * - Los datos se envían/reciben en formato JSON
