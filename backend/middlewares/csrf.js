@@ -1,3 +1,4 @@
+//csrf
 const crypto = require('crypto');
 
 function generateCsrfToken(req, res, next) {

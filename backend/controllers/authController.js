@@ -1,9 +1,8 @@
-//authController
+// backend/controllers/authController.js
 const bcrypt = require('bcryptjs');
 const sql = require('mssql');
 const config = require('../db.js');
 const path = require('path');
-const multer = require('multer');
 const fs = require('fs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
@@ -51,61 +50,25 @@ exports.validateResetPassword = [
         .matches(/[^A-Za-z0-9]/).withMessage('La nueva contraseña debe contener al menos un carácter especial'),
 ];
 
-// Configuración de Multer para subir imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = 'public/uploads';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true }); 
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}-${file.fieldname}${ext}`); // Añadido file.fieldname para evitar colisiones si se suben múltiples archivos con el mismo timestamp
-  }
-});
-
-// Función para filtrar los tipos de archivo permitidos
-const fileFilter = (req, file, cb) => {
-  // Extensiones de archivo permitidas
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-  // Obtener la extensión del archivo subido
-  const ext = path.extname(file.originalname).toLowerCase();
-
-  // Verificar si la extensión está en la lista de permitidas
-  if (allowedExtensions.includes(ext)) {
-    cb(null, true); // Aceptar el archivo
-  } else {
-    // Rechazar el archivo y enviar un error personalizado
-    cb(new Error('Tipo de archivo no permitido. Solo se permiten imágenes (jpg, jpeg, png, gif).'), false);
-  }
-};
-
-// Configuración de Multer con el almacenamiento, filtro y límites
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // Limitar el tamaño del archivo a 5MB (en bytes)
-  }
-}).single('fotoPerfil'); // El nombre del campo en tu formulario
-
-//Muestra el formulario del login 
+//Muestra el formulario del login
 exports.getLogin = (req, res) => {
-  res.render('login', { mensaje: req.session.mensaje }); //Muestra un mensaje si hay error
-  req.session.mensaje = null;
+    res.render('login', {
+        mensaje: req.session.mensaje,
+        csrfToken: req.session.csrfToken
+    });
+    req.session.mensaje = null;
 };
 
 //Muestra el formulario del registro con imagenes predeterminadas
 exports.getRegister = (req, res) => {
-  // Lista de imágenes predeterminadas (del 1 al 11)
-  const imagenes = Array.from({ length: 12 }, (_, i) => `/images/${i + 1}.png`);
-  res.render('register', {
-  imagenes,
-  oldInput: {}, 
-  mensaje: null
-});
+    // Lista de imágenes predeterminadas (del 1 al 11)
+    const imagenes = Array.from({ length: 12 }, (_, i) => `/images/${i + 1}.png`);
+    res.render('register', {
+        imagenes,
+        oldInput: {},
+        mensaje: null,
+        csrfToken: req.session.csrfToken
+    });
 };
 
 exports.getIndex = (req, res) => {
@@ -122,11 +85,11 @@ exports.postLogin = async (req, res, next) => {
     }
 
     const { correo, contrasena } = req.body;
-    const loginLimiter = require('../utils/loginAttempts');
+    const loginLimiter = require('../middlewares/loginAttempts.js');
 
     if (loginLimiter.isBlocked(correo)) {
-      req.session.mensaje = 'Demasiados intentos fallidos. Intenta nuevamente en unos minutos.';
-      return res.redirect('/');
+        req.session.mensaje = 'Demasiados intentos fallidos. Intenta nuevamente en unos minutos.';
+        return res.redirect('/');
     }
 
     try {
@@ -160,101 +123,80 @@ exports.postLogin = async (req, res, next) => {
 };
 
 // Registra a un nuevo ususario (con imagen de perfil)
-exports.postRegister = (req, res, next) => {
-    upload(req, res, async function (err) {
-        if (err instanceof multer.MulterError) {
-            // Un error específico de Multer
-            if (err.code === 'LIMIT_FILE_SIZE') {
-                req.session.mensaje = 'El tamaño del archivo es demasiado grande. Máximo 5MB.';
-            } else {
-                // Otros errores de Multer (ej. demasiado campo, etc.)
-                req.session.mensaje = `Error al subir la imagen: ${err.message}`;
-            }
-            console.error("MulterError en postRegister:", err);
-            return res.redirect('/register');
-        } else if (err) {
-            // Otros errores (ej. el que creamos en fileFilter)
-            req.session.mensaje = `Error al subir la imagen: ${err.message}`;
-            console.error("Error general de Multer en postRegister:", err);
-            return res.redirect('/register');
-        }
-
-        // 1. Verificar errores de validación DESPUÉS de Multer
+exports.postRegister = async (req, res, next) => {
+    try {
+        // Validaciones de Express-Validator
         await Promise.all(exports.validateRegister.map(validation => validation.run(req)));
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            // Si hay errores de validación, renderiza el formulario de registro con los errores
             const imagenes = Array.from({ length: 12 }, (_, i) => `/images/${i + 1}.png`);
-            if (req.file) {
+            if (req.file) { // Si Multer ya subió un archivo y la validación falla, elimínalo
                 fs.unlink(req.file.path, (unlinkErr) => {
                     if (unlinkErr) console.error('Error al eliminar archivo subido (validación fallida):', unlinkErr);
                 });
             }
             return res.render('register', {
                 imagenes,
-                errors: errors.array(), // Pasa los errores a la vista
-                oldInput: req.body, // Opcional: pasa los datos antiguos para rellenar el formulario
-                mensaje: null // Limpia cualquier mensaje de sesión anterior si lo hubiera
+                errors: errors.array(),
+                oldInput: req.body,
+                mensaje: null,
+                csrfToken: req.session.csrfToken
             });
         }
 
+        // Registro en la base de datos
         const { nombre, correo, contrasena, imagenSeleccionada } = req.body;
-        const fotoPerfil = req.file ? `/uploads/${req.file.filename}` : imagenSeleccionada;
+        const fotoPerfil = req.file ? `/uploads/${req.file.filename}` : imagenSeleccionada; // req.file ya está disponible
 
-        try {
-            const hash = bcrypt.hashSync(contrasena, 10);
-            const pool = await sql.connect(config);
+        const hash = bcrypt.hashSync(contrasena, 10);
+        const pool = await sql.connect(config);
 
-            await pool.request()
-                .input('nombreUsuario', sql.VarChar, nombre)
-                .input('correoUsuario', sql.VarChar, correo)
-                .input('contrasenia', sql.VarChar, hash)
-                .input('fotoPerfil', sql.VarChar, fotoPerfil)
-                .query(`
-                    INSERT INTO Usuarios (nombreUsuario, correoUsuario, contrasenia, fotoPerfil, rol)
-                    VALUES (@nombreUsuario, @correoUsuario, @contrasenia, @fotoPerfil, 'usuario')
-                `);
+        await pool.request()
+            .input('nombreUsuario', sql.VarChar, nombre)
+            .input('correoUsuario', sql.VarChar, correo)
+            .input('contrasenia', sql.VarChar, hash)
+            .input('fotoPerfil', sql.VarChar, fotoPerfil)
+            .query(`
+                INSERT INTO Usuarios (nombreUsuario, correoUsuario, contrasenia, fotoPerfil, rol)
+                VALUES (@nombreUsuario, @correoUsuario, @contrasenia, @fotoPerfil, 'usuario')
+            `);
 
-            req.session.mensaje = '¡Registro exitoso! Por favor, inicia sesión.';
-            res.redirect('/');
-        } catch (error) {
-            console.error("Error en postRegister (DB):", error);
-            if (req.file) {
-                fs.unlink(req.file.path, (unlinkErr) => {
-                    if (unlinkErr) console.error('Error al eliminar archivo subido (DB fallida):', unlinkErr);
-                });
-            }
-            // Verifica si es un error de duplicidad de correo 
-            if (error.message.includes('Violation of UNIQUE KEY constraint') || error.number === 2627) { // 2627 es un error común para duplicacion de correo
-                req.session.mensaje = 'El correo electrónico ya está registrado.';
-                return res.redirect('/register');
-            }
-            req.session.mensaje = 'Error al registrar usuario. Inténtalo de nuevo.';
-            next(error); // Pasa el error al middleware de errores centralizado
+        req.session.mensaje = '¡Registro exitoso! Por favor, inicia sesión.';
+        res.redirect('/');
+    } catch (error) {
+        console.error("Error general en postRegister:", error);
+        req.session.mensaje = 'Error al registrar usuario. Inténtalo de nuevo.';
+
+        if (req.file) { // Si hay un archivo y se produce un error, elimínalo
+            fs.unlink(req.file.path, (unlinkErr) => {
+                if (unlinkErr) console.error('Error al eliminar archivo subido (catch):', unlinkErr);
+            });
         }
-    });
+
+        return next(error);
+    }
 };
 
 // Muestra la vista para recuperrar contraseña
 exports.getRecoverForm = (req, res) => {
-  res.render('recover');
+    res.render('recover');
 };
 
 // Envia un correo con un token unico
 exports.sendRecoverEmail = async (req, res, next) => {
-   // 1. Verificar errores de validación
+    // 1. Verificar errores de validación
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         req.session.mensaje = errors.array().map(e => e.msg).join(', ');
         return res.redirect('/recuperar');
     }
 
-  const { correo } = req.body;
-  const token = crypto.randomBytes(32).toString('hex'); // Genera un token unico aleatoreo de 32 bytes
-  const tokenExpira = new Date(Date.now() + 3600000); // Duracion del token de 1 hora
+    const { correo } = req.body;
+    const token = crypto.randomBytes(32).toString('hex'); // Genera un token unico aleatoreo de 32 bytes
+    const tokenExpira = new Date(Date.now() + 3600000); // Duracion del token de 1 hora
 
-  try {
+    try {
         const pool = await sql.connect(config);
         const result = await pool.request()
             .input('correo', sql.VarChar, correo)
@@ -277,29 +219,29 @@ exports.sendRecoverEmail = async (req, res, next) => {
                 WHERE idUsuario = @id
             `);
 
-    // Configura el envio de correo 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS
-      }
-    });
+        // Configura el envio de correo
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
 
-    // Enlace para recuperar la contraseña(incluye el token)
-    const enlace = `http://localhost:3000/reset-password/${token}`;
+        // Enlace para recuperar la contraseña(incluye el token)
+        const enlace = `http://localhost:3000/reset-password/${token}`;
 
-    // Formato del correo y envio 
-    await transporter.sendMail({
-      from: '@gmail.com',
-      to: correo,
-      subject: 'Recuperación de contraseña',
-      html: `<p>Haz clic en el siguiente enlace para cambiar tu contraseña:</p>
-             <a href="${enlace}">${enlace}</a>
-             <p>Este enlace expirará en 1 hora.</p>`
-    });
+        // Formato del correo y envio
+        await transporter.sendMail({
+            from: '@gmail.com',
+            to: correo,
+            subject: 'Recuperación de contraseña',
+            html: `<p>Haz clic en el siguiente enlace para cambiar tu contraseña:</p>
+                   <a href="${enlace}">${enlace}</a>
+                   <p>Este enlace expirará en 1 hora.</p>`
+        });
 
-       req.session.mensaje = 'Se ha enviado un correo de recuperación (si el correo existe).';
+        req.session.mensaje = 'Se ha enviado un correo de recuperación (si el correo existe).';
         res.redirect('/');
     } catch (e) {
         console.error("Error en sendRecoverEmail:", e);
@@ -310,27 +252,27 @@ exports.sendRecoverEmail = async (req, res, next) => {
 
 // Formulario para colocar la nueva contraseña
 exports.getResetForm = async (req, res) => {
-  const { token } = req.params;
+    const { token } = req.params;
 
-  const pool = await sql.connect(config);
-  const result = await pool.request() // Busca el usuario con token y valida la expiracion 
-    .input('tokenRecuperacion', sql.VarChar, token)
-    .query(`
-      SELECT * FROM Usuarios
-      WHERE tokenRecuperacion = @token AND tokenExpiracion > GETDATE()
-    `);
- 
-  // Muestra error si no es valido o ya expiro el token 
-  if (result.recordset.length === 0) {
-    return res.send('Enlace inválido o expirado');
-  }
+    const pool = await sql.connect(config);
+    const result = await pool.request() // Busca el usuario con token y valida la expiracion
+        .input('tokenRecuperacion', sql.VarChar, token)
+        .query(`
+            SELECT * FROM Usuarios
+            WHERE tokenRecuperacion = @token AND tokenExpiracion > GETDATE()
+        `);
 
-  res.render('reset-password', { token });
+    // Muestra error si no es valido o ya expiro el token
+    if (result.recordset.length === 0) {
+        return res.send('Enlace inválido o expirado');
+    }
+
+    res.render('reset-password', { token });
 };
 
 // Guarda la nueva contraseña
 exports.postResetPassword = async (req, res, next) => {
-  // 1. Verificar errores de validación
+    // 1. Verificar errores de validación
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         // Si hay errores de validación de contraseña, re-renderiza el formulario con el token
@@ -342,10 +284,10 @@ exports.postResetPassword = async (req, res, next) => {
         });
     }
 
-  const { token } = req.params;
-  const { contrasena } = req.body;
+    const { token } = req.params;
+    const { contrasena } = req.body;
 
-   try {
+    try {
         const hash = bcrypt.hashSync(contrasena, 10);
 
         const pool = await sql.connect(config);
@@ -379,8 +321,8 @@ exports.postResetPassword = async (req, res, next) => {
     }
 };
 
-// Borra la session 
+// Borra la session
 exports.logout = (req, res) => {
-  req.session.destroy();
-  res.redirect('/');
+    req.session.destroy();
+    res.redirect('/');
 };

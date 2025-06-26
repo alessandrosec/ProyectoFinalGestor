@@ -1,3 +1,4 @@
+// registro
 document.addEventListener('DOMContentLoaded', function () {
   const select = document.getElementById('imagenSeleccionada');
   const contenedor = document.getElementById('vista-previa');

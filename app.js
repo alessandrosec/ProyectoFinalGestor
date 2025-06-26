@@ -19,7 +19,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    secure: process.env.NODE_ENV,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true, // Previene que JavaScript del lado del cliente acceda a la cookie (protección contra XSS)
     maxAge: 1000 * 60 * 60 * 24, // Duración de la cookie en milisegundos (aquí, 24 horas)
     sameSite: 'Lax' // Previene ataques CSRF

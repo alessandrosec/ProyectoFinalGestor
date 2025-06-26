@@ -1,3 +1,4 @@
+//loginAttempts
 const attempts = {};
 const LIMIT = 5;
 const BLOCK_TIME_MS = 5 * 60 * 1000; // 5 minutos

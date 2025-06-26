@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController.js');
 const { verifyCsrfToken } = require('../middlewares/csrf');
+const upload = require('../middlewares/uploads');
 
 
 router.get('/', authController.getLogin); // Formulario del login
@@ -13,7 +14,7 @@ router.get('/reset-password/:token', authController.getResetForm); // Formulario
 
 router.post('/login', verifyCsrfToken, authController.validateLogin, authController.postLogin); // Procesa el login
 
-router.post('/registro', verifyCsrfToken, authController.validateRegister, authController.postRegister); // Procesa el registro
+router.post('/registro', upload, verifyCsrfToken, authController.postRegister); // Procesa el registro
 
 // Para enviar el correo de recuperación, aplicamos la validación
 router.post('/enviar-recuperacion', verifyCsrfToken, authController.validateSendRecoverEmail, authController.sendRecoverEmail); // Procesa enviar correo_recuperacion
