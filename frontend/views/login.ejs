@@ -15,15 +15,21 @@
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <label>Correo:</label>
-      <input type="email" name="correo" required>
+      <input type="email" name="correo" id="uname" required>
       <br>
       <label>Contraseña:</label>
-      <input type="password" name="contrasena" required>
+      <input type="password" name="contrasena" id="pass" required>
       <br>
-      <button type="submit">Entrar</button>
+      <div class="msg" id="msg"></div>
+      <div class="btn-container">
+        <button id="login-btn" type="button">Entrar</button>
+      </div>
     </form>
-    <p>¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
-    <p>¿Olvidaste tu contraseña? <a href="/recuperar">Recupérala aquí</a></p>
+    <div class="links">
+      <p>¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
+      <p>¿Olvidaste tu contraseña? <a href="/recuperar">Recupérala aquí</a></p>
+    </div>
   </div>
+  <script src="/js/login.js"></script>
 </body>
 </html>
