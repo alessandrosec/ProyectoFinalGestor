@@ -4,9 +4,11 @@ const session = require('express-session');
 const path = require('path');
 const { generateCsrfToken } = require('./backend/middlewares/csrf');
 const helmet = require('helmet');
+const projectRoutes = require('./backend/routes/project'); // Nuevo
 require('dotenv').config();
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.urlencoded({ extended: true })); //Permite leer los datos de los formularios
 app.use(express.json());
@@ -34,6 +36,8 @@ app.set('views', path.join(__dirname,'frontend', 'views'));
 // Rutas
 const authRoutes = require('./backend/routes/auth'); //Importa la ruta de autenticacion 
 app.use('/', authRoutes);
+app.use('/', authRoutes);
+app.use('/', projectRoutes); // Nuevo: Usar las rutas de proyectos
 
 // Middleware para manejo de errores 
 app.use((err, req, res, next) => {

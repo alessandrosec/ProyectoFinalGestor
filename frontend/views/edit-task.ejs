@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Tarea: <%= tarea.nombreTarea %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 700px; margin: auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: calc(100% - 22px); /* Ajuste para el padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        button:hover { background-color: #0056b3; }
+        .cancel-btn {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+        .cancel-btn:hover { background-color: #5a6268; }
+        .error-message { color: red; margin-bottom: 15px; }
+        .success-message { color: green; margin-bottom: 15px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Tarea: <%= tarea.nombreTarea %></h1>
+
+        <% if (mensaje) { %>
+            <p class="success-message"><%= mensaje %></p>
+        <% } %>
+        <% if (errors && errors.length > 0) { %>
+            <div class="error-message">
+                <p>Por favor, corrige los siguientes errores:</p>
+                <ul>
+                    <% errors.forEach(function(error) { %>
+                        <li><%= error.msg %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        <% } %>
+
+        <form action="/proyectos/<%= proyectoId %>/tareas/editar/<%= tarea.idTarea %>" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <label for="nombreTarea">Nombre de la Tarea:</label>
+            <input type="text" id="nombreTarea" name="nombreTarea" value="<%= oldInput ? oldInput.nombreTarea : tarea.nombreTarea %>" required>
+
+            <label for="descripcionTarea">Descripción:</label>
+            <textarea id="descripcionTarea" name="descripcionTarea" rows="5"><%= oldInput ? oldInput.descripcionTarea : tarea.descripcionTarea %></textarea>
+
+            <label for="fechaEntrega">Fecha de Entrega:</label>
+            <input type="date" id="fechaEntrega" name="fechaEntrega" value="<%= (oldInput ? new Date(oldInput.fechaEntrega) : new Date(tarea.fechaEntrega)).toISOString().split('T')[0] %>" required>
+
+            <label for="idUsuarioAsignado">Asignar a:</label>
+            <select id="idUsuarioAsignado" name="idUsuarioAsignado">
+                <option value="">Sin asignar</option>
+                <% participantes.forEach(function(p) { %>
+                    <option value="<%= p.idUsuario %>" <%= (oldInput ? oldInput.idUsuarioAsignado == p.idUsuario : tarea.idUsuarioAsignado == p.idUsuario) ? 'selected' : '' %>>
+                        <%= p.nombreUsuario %>
+                    </option>
+                <% }); %>
+            </select>
+
+            <label for="estadoTarea">Estado:</label>
+            <select id="estadoTarea" name="estadoTarea">
+                <% ['Pendiente', 'En Proceso', 'Completada', 'Bloqueada'].forEach(function(estado) { %>
+                    <option value="<%= estado %>" <%= (oldInput ? oldInput.estadoTarea == estado : tarea.estadoTarea == estado) ? 'selected' : '' %>>
+                        <%= estado %>
+                    </option>
+                <% }); %>
+            </select>
+
+            <label for="prioridadTarea">Prioridad:</label>
+            <select id="prioridadTarea" name="prioridadTarea">
+                <% ['Baja', 'Media', 'Alta', 'Urgente'].forEach(function(prioridad) { %>
+                    <option value="<%= prioridad %>" <%= (oldInput ? oldInput.prioridadTarea == prioridad : tarea.prioridadTarea == prioridad) ? 'selected' : '' %>>
+                        <%= prioridad %>
+                    </option>
+                <% }); %>
+            </select>
+            <br>
+            <button type="submit">Actualizar Tarea</button>
+            <button type="button" class="cancel-btn" onclick="window.location.href='/proyectos/<%= proyectoId %>'">Cancelar</button>
+        </form>
+
+        <a href="/proyectos/<%= proyectoId %>" class="back-link">&larr; Volver a Detalles del Proyecto</a>
+    </div>
+</body>
+</html>

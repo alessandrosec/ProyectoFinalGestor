@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Proyecto: <%= proyecto.nombreProyecto %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Estilos generales para el cuerpo */
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #0056b3; margin-bottom: 15px; }
+        p { line-height: 1.6; }
+        .info-section { margin-bottom: 25px; padding: 15px; background-color: #e9f7ff; border-left: 5px solid #007bff; border-radius: 4px; }
+        .info-section strong { color: #004085; }
+
+        /* Estilos para los botones de acción del proyecto */
+        .project-actions-top { margin-bottom: 25px; display: flex; gap: 10px; }
+        .project-actions-top a, .project-actions-top button {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .project-actions-top .edit-btn { background-color: #ffc107; color: #333; }
+        .project-actions-top .edit-btn:hover { background-color: #e0a800; }
+        .project-actions-top .delete-btn { background-color: #dc3545; color: white; }
+        .project-actions-top .delete-btn:hover { background-color: #c82333; }
+        .project-actions-top .delete-form { display: inline-block; }
+
+        /* Miembros del proyecto */
+        .member-list { list-style: none; padding: 0; margin-top: 10px; }
+        .member-list li { background-color: #f0f8ff; border: 1px solid #cceeff; margin-bottom: 8px; padding: 10px; border-radius: 5px; }
+
+        /* Formulario de Tareas */
+        .task-form-section, .subtask-form-section {
+            background-color: #f8f9fa;
+            border: 1px solid #e2e6ea;
+            padding: 20px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .task-form-section h3, .subtask-form-section h3 { color: #007bff; margin-top: 0; }
+        .task-form-section label, .subtask-form-section label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .task-form-section input[type="text"],
+        .task-form-section input[type="date"],
+        .task-form-section select,
+        .task-form-section textarea,
+        .subtask-form-section input[type="text"],
+        .subtask-form-section input[type="date"],
+        .subtask-form-section select,
+        .subtask-form-section textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .task-form-section button, .subtask-form-section button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .task-form-section button:hover, .subtask-form-section button:hover {
+            background-color: #0056b3;
+        }
+        .error-message { color: red; margin-bottom: 15px; }
+        .success-message { color: green; margin-bottom: 15px; }
+
+        /* Lista de Tareas */
+        .task-list { margin-top: 20px; }
+        .task-item {
+            border: 1px solid #cceeff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #f0f8ff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .task-item h4 { margin-top: 0; color: #0056b3; }
+        .task-item p { margin: 5px 0; }
+        .task-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .task-actions a, .task-actions button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .task-actions .details-btn { background-color: #007bff; color: white; }
+        .task-actions .details-btn:hover { background-color: #0056b3; }
+        .task-actions .edit-btn { background-color: #ffc107; color: #333; }
+        .task-actions .edit-btn:hover { background-color: #e0a800; }
+        .task-actions .delete-btn { background-color: #dc3545; color: white; }
+        .task-actions .delete-btn:hover { background-color: #c82333; }
+        .task-actions .subtask-create-btn { background-color: #6c757d; color: white; }
+        .task-actions .subtask-create-btn:hover { background-color: #5a6268; }
+
+        /* Lista de Subtareas (anidada) */
+        .subtask-list { list-style: none; padding: 0; margin-top: 15px; border-top: 1px dashed #cceeff; padding-top: 10px; }
+        .subtask-item {
+            background-color: #ffffff;
+            border: 1px dashed #e2e6ea;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 0.95em;
+        }
+        .subtask-item strong { color: #555; }
+        .subtask-actions { margin-top: 8px; display: flex; gap: 5px; }
+        .subtask-actions a, .subtask-actions button {
+             padding: 4px 8px;
+             border-radius: 3px;
+             font-size: 0.8em;
+             text-decoration: none;
+             font-weight: bold;
+             cursor: pointer;
+             border: none;
+             transition: background-color 0.3s ease;
+         }
+        .subtask-actions .edit-btn { background-color: #ffc107; color: #333; }
+        .subtask-actions .delete-btn { background-color: #dc3545; color: white; }
+
+        .back-link { display: inline-block; margin-top: 30px; color: #007bff; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalles del Proyecto: <%= proyecto.nombreProyecto %></h1>
+
+        <% if (mensaje) { %>
+            <p class="success-message"><%= mensaje %></p>
+        <% } %> <% if (errors && errors.length > 0) { %>
+            <div class="error-message">
+                <p>Por favor, corrige los siguientes errores:</p>
+                <ul>
+                    <% errors.forEach(function(error) { %>
+                        <li><%= error.msg %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        <% } %>
+
+
+        <div class="info-section">
+            <p><strong>Descripción:</strong> <%= proyecto.descripcionProyecto %></p>
+            <p><strong>Fecha de Creación:</strong> <%= new Date(proyecto.fechaCreacion).toLocaleDateString('es-ES') %></p>
+            <p><strong>Fecha de Entrega:</strong> <%= new Date(proyecto.fechaEntrega).toLocaleDateString('es-ES') %></p>
+            <p><strong>Estado del Proyecto:</strong> <%= proyecto.estadoProyecto %></p>
+            <p><strong>Administrador:</strong> <%= proyecto.nombreAdmin %></p>
+            <p><strong>Tu rol en este proyecto:</strong> <%= proyecto.rolProyecto %></p>
+        </div>
+
+        <div class="project-actions-top">
+            <% if (proyecto.idUsuarioAdmin === usuarioActual.id) { %>
+                <a href="/proyectos/editar/<%= proyecto.idProyecto %>" class="edit-btn">Editar Proyecto</a>
+                <form action="/proyectos/eliminar/<%= proyecto.idProyecto %>" method="POST" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto? Todas las tareas y subtareas asociadas también se eliminarán.');">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="delete-btn">Eliminar Proyecto</button>
+                </form>
+            <% } %>
+        </div>
+
+        <h2>Miembros del Proyecto</h2>
+        <% if (participantes && participantes.length > 0) { %>
+            <ul class="member-list">
+                <% participantes.forEach(function(p) { %>
+                    <li>
+                        <strong><%= p.nombreUsuario %></strong> (<%= p.correoUsuario %>) - Rol: <%= p.rolProyecto %>
+                        <% if (p.estadoInvitacion !== 'aceptada') { %>
+                            <span style="color: gray; font-size: 0.9em;">(Invitación: <%= p.estadoInvitacion %>)</span>
+                        <% } %>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No hay miembros en este proyecto aún (aparte del administrador).</p>
+        <% } %>
+
+        <% if (proyecto.rolProyecto === 'admin') { %>
+            <div class="task-form-section">
+                <h3>Crear Nueva Tarea</h3>
+                <form action="/proyectos/<%= proyecto.idProyecto %>/tareas" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <label for="nombreTarea">Nombre de la Tarea:</label>
+                    <input type="text" id="nombreTarea" name="nombreTarea" required>
+
+                    <label for="descripcionTarea">Descripción:</label>
+                    <textarea id="descripcionTarea" name="descripcionTarea" rows="3"></textarea>
+
+                    <label for="fechaEntrega">Fecha de Entrega:</label>
+                    <input type="date" id="fechaEntrega" name="fechaEntrega" required>
+
+                    <label for="idUsuarioAsignado">Asignar a:</label>
+                    <select id="idUsuarioAsignado" name="idUsuarioAsignado">
+                        <option value="">Sin asignar</option>
+                        <% participantes.forEach(function(p) { %>
+                            <option value="<%= p.idUsuario %>"><%= p.nombreUsuario %></option>
+                        <% }); %>
+                    </select>
+
+                    <label for="estadoTarea">Estado:</label>
+                    <select id="estadoTarea" name="estadoTarea">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Bloqueada">Bloqueada</option>
+                    </select>
+
+                    <label for="prioridadTarea">Prioridad:</label>
+                    <select id="prioridadTarea" name="prioridadTarea">
+                        <option value="Baja">Baja</option>
+                        <option value="Media" selected>Media</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Urgente">Urgente</option>
+                    </select>
+                    <br>
+                    <button type="submit">Crear Tarea</button>
+                </form>
+            </div>
+        <% } %>
+
+        <h2>Tareas del Proyecto</h2>
+        <% if (tareas && tareas.length > 0) { %>
+            <div class="task-list">
+                <% tareas.forEach(function(tarea) { %>
+                    <div class="task-item">
+                        <h4><%= tarea.nombreTarea %></h4>
+                        <p><strong>Descripción:</strong> <%= tarea.descripcionTarea %></p>
+                        <p><strong>Creada el:</strong> <%= new Date(tarea.fechaCreacion).toLocaleDateString('es-ES') %></p>
+                        <p><strong>Fecha Límite:</strong> <%= new Date(tarea.fechaEntrega).toLocaleDateString('es-ES') %></p>
+                        <p><strong>Estado:</strong> <%= tarea.estadoTarea %></p>
+                        <p><strong>Prioridad:</strong> <%= tarea.prioridadTarea %></p>
+                        <p><strong>Creador:</strong> <%= tarea.nombreCreador || 'N/A' %></p>
+                        <p><strong>Asignado a:</strong> <%= tarea.nombreAsignado || 'Sin asignar' %></p>
+
+                        <div class="task-actions">
+                            <% if (proyecto.rolProyecto === 'admin' || tarea.idUsuarioAsignado === usuarioActual.id || tarea.idUsuarioCreador === usuarioActual.id) { %>
+                                <a href="/proyectos/<%= proyecto.idProyecto %>/tareas/editar/<%= tarea.idTarea %>" class="edit-btn">Editar Tarea</a>
+                                <form action="/proyectos/<%= proyecto.idProyecto %>/tareas/eliminar/<%= tarea.idTarea %>" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta tarea? Se eliminarán también sus subtareas.');">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="delete-btn">Eliminar Tarea</button>
+                                </form>
+                            <% } %>
+                            <% if (proyecto.rolProyecto === 'admin' || tarea.idUsuarioAsignado === usuarioActual.id || tarea.idUsuarioCreador === usuarioActual.id) { %>
+                               <button type="button" class="subtask-create-btn" data-task-id="<%= tarea.idTarea %>">Crear Subtarea</button>
+                            <% } %>
+                        </div>
+                        
+                        <div id="subtaskForm-<%= tarea.idTarea %>" style="display:none; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 15px;">
+                            <h4>Crear Nueva Subtarea para "<%= tarea.nombreTarea %>"</h4>
+                            <form action="/proyectos/<%= proyecto.idProyecto %>/tareas/<%= tarea.idTarea %>/subtareas" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                <label for="nombreSubtarea-<%= tarea.idTarea %>">Nombre de la Subtarea:</label>
+                                <input type="text" id="nombreSubtarea-<%= tarea.idTarea %>" name="nombreSubtarea" required>
+
+                                <label for="descripcionSubtarea-<%= tarea.idTarea %>">Descripción:</label>
+                                <textarea id="descripcionSubtarea-<%= tarea.idTarea %>" name="descripcionSubtarea" rows="2"></textarea>
+
+                                <label for="fechaEntregaSubtarea-<%= tarea.idTarea %>">Fecha de Entrega:</label>
+                                <input type="date" id="fechaEntregaSubtarea-<%= tarea.idTarea %>" name="fechaEntregaSubtarea" required>
+
+                                <label for="idUsuarioAsignadoSubtarea-<%= tarea.idTarea %>">Asignar a:</label>
+                                <select id="idUsuarioAsignadoSubtarea-<%= tarea.idTarea %>" name="idUsuarioAsignadoSubtarea">
+                                    <option value="">Sin asignar</option>
+                                    <% participantes.forEach(function(p) { %>
+                                        <option value="<%= p.idUsuario %>"><%= p.nombreUsuario %></option>
+                                    <% }); %>
+                                </select>
+
+                                <label for="estadoSubtarea-<%= tarea.idTarea %>">Estado:</label>
+                                <select id="estadoSubtarea-<%= tarea.idTarea %>" name="estadoSubtarea">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="En Proceso">En Proceso</option>
+                                    <option value="Completada">Completada</option>
+                                    <option value="Bloqueada">Bloqueada</option>
+                                </select>
+
+                                <label for="prioridadSubtarea-<%= tarea.idTarea %>">Prioridad:</label>
+                                <select id="prioridadSubtarea-<%= tarea.idTarea %>" name="prioridadSubtarea">
+                                    <option value="Baja">Baja</option>
+                                    <option value="Media" selected>Media</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Urgente">Urgente</option>
+                                </select>
+                                <br>
+                                <button type="submit">Crear Subtarea</button>
+                            </form>
+                        </div>
+
+                        <% if (tarea.subtareas && tarea.subtareas.length > 0) { %>
+                            <ul class="subtask-list">
+                                <h4>Subtareas:</h4>
+                                <% tarea.subtareas.forEach(function(subtarea) { %>
+                                    <li class="subtask-item">
+                                        <strong><%= subtarea.nombreSubtarea %></strong>
+                                        (Asignado: <%= subtarea.nombreAsignadoSubtarea || 'N/A' %>)
+                                        - Estado: <%= subtarea.estadoSubtarea %>
+                                        - Prioridad: <%= subtarea.prioridadSubtarea %>
+                                        <br>
+                                        <small>Entrega: <%= new Date(subtarea.fechaEntrega).toLocaleDateString('es-ES') %></small>
+                                        <div class="subtask-actions">
+                                            <% // Permiso para editar/eliminar subtarea: Admin del proyecto, creador de la subtarea o asignado a la subtarea %>
+                                            <% if (proyecto.rolProyecto === 'admin' || subtarea.idUsuarioAsignado === usuarioActual.id || subtarea.idUsuarioCreador === usuarioActual.id) { %>
+                                                <a href="/proyectos/<%= proyecto.idProyecto %>/tareas/<%= tarea.idTarea %>/subtareas/editar/<%= subtarea.idSubtarea %>" class="edit-btn">Editar</a>
+                                                <form action="/proyectos/<%= proyecto.idProyecto %>/tareas/<%= tarea.idTarea %>/subtareas/eliminar/<%= subtarea.idSubtarea %>" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta subtarea?');">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="delete-btn">Eliminar</button>
+                                                </form>
+                                            <% } %>
+                                        </div>
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        <% } else { %>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">No hay subtareas para esta tarea.</p>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <p>No hay tareas en este proyecto aún.</p>
+        <% } %>
+
+        <a href="/proyectos" class="back-link">&larr; Volver a Mis Proyectos</a>
+    </div>
+
+</body>
+<script src="/js/projectDetails.js"></script>
+</html>

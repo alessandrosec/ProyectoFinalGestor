@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Proyecto: <%= proyecto.nombreProyecto %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 600px; margin: auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            width: calc(100% - 20px); /* Adjusting for padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message { color: red; margin-bottom: 15px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Proyecto: <%= proyecto.nombreProyecto %></h1>
+
+        <% if (errors && errors.length > 0) { %>
+            <div class="error-message">
+                <p>Por favor, corrige los siguientes errores:</p>
+                <ul>
+                    <% errors.forEach(function(error) { %>
+                        <li><%= error.msg %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        <% } %>
+
+        <form action="/proyectos/editar/<%= proyecto.idProyecto %>" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <label for="nombreProyecto">Nombre del Proyecto:</label>
+            <input type="text" id="nombreProyecto" name="nombreProyecto" value="<%= oldInput.nombreProyecto || proyecto.nombreProyecto %>" required>
+
+            <label for="descripcionProyecto">Descripción:</label>
+            <textarea id="descripcionProyecto" name="descripcionProyecto" rows="5" required><%= oldInput.descripcionProyecto || proyecto.descripcionProyecto %></textarea>
+
+            <label for="fechaEntrega">Fecha de Entrega:</label>
+            <input type="date" id="fechaEntrega" name="fechaEntrega" value="<%= new Date(oldInput.fechaEntrega || proyecto.fechaEntrega).toISOString().split('T')[0] %>" required>
+
+            <label for="estadoProyecto">Estado del Proyecto:</label>
+            <select id="estadoProyecto" name="estadoProyecto">
+                <option value="Activo" <%= (oldInput.estadoProyecto || proyecto.estadoProyecto) === 'Activo' ? 'selected' : '' %>>Activo</option>
+                <option value="Archivado" <%= (oldInput.estadoProyecto || proyecto.estadoProyecto) === 'Archivado' ? 'selected' : '' %>>Archivado</option>
+                <option value="Completado" <%= (oldInput.estadoProyecto || proyecto.estadoProyecto) === 'Completado' ? 'selected' : '' %>>Completado</option>
+                </select>
+
+            <button type="submit">Actualizar Proyecto</button>
+        </form>
+
+        <a href="/proyectos/<%= proyecto.idProyecto %>" class="back-link">&larr; Volver a Detalles del Proyecto</a>
+    </div>
+</body>
+</html>

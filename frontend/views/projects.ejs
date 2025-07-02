@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Proyectos</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Estilos generales para el cuerpo */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        /* Estilo para los títulos */
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        /* Estilo para mensajes de éxito/error */
+        p.message {
+            color: green;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        /* Estilo para el enlace "Crear Nuevo Proyecto" */
+        p.create-link {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        p.create-link a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745; /* Verde para crear */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        p.create-link a:hover {
+            background-color: #218838;
+        }
+        /* Estilo para la lista de proyectos */
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        /* Estilo para cada elemento de proyecto en la lista */
+        ul li {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            line-height: 1.6;
+        }
+        ul li strong {
+            font-size: 1.2em;
+            color: #0056b3;
+        }
+        /* Estilo para la sección de acciones de cada proyecto */
+        .project-actions {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            display: flex; /* Para alinear los botones en línea */
+            gap: 10px; /* Espacio entre los botones */
+            align-items: center;
+        }
+        .project-actions a {
+            color: #007bff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .project-actions a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .project-actions .edit-btn {
+            background-color: #ffc107; /* Amarillo para editar */
+            color: #333;
+            border-color: #ffc107;
+        }
+        .project-actions .edit-btn:hover {
+            background-color: #e0a800;
+        }
+        .project-actions .delete-form {
+            display: inline-block;
+            margin: 0; /* Asegurarse de que no haya margen extra */
+        }
+        .project-actions .delete-btn {
+            background-color: #dc3545; /* Rojo para eliminar */
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .project-actions .delete-btn:hover {
+            background-color: #c82333;
+        }
+        /* Estilo para cuando no hay proyectos */
+        p.no-projects {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            margin-top: 30px;
+        }
+        /* Estilo para el enlace de cerrar sesión */
+        p.logout-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        p.logout-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        p.logout-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mis Proyectos</h1>
+    <% if (mensaje) { %>
+        <p class="message"><%= mensaje %></p>
+    <% } %>
+
+    <p class="create-link"><a href="/proyectos/crear">Crear Nuevo Proyecto</a></p>
+
+    <% if (proyectos && proyectos.length > 0) { %>
+        <ul>
+            <% proyectos.forEach(function(proyecto) { %>
+                <li>
+                    <strong><%= proyecto.nombreProyecto %></strong> (Admin: <%= proyecto.nombreAdmin %>)<br>
+                    Descripción: <%= proyecto.descripcionProyecto %><br>
+                    Fecha de Creación: <%= new Date(proyecto.fechaCreacion).toLocaleDateString('es-ES') %><br>
+                    Fecha de Entrega: <%= new Date(proyecto.fechaEntrega).toLocaleDateString('es-ES') %><br>
+                    
+                    <div class="project-actions">
+                        <a href="/proyectos/<%= proyecto.idProyecto %>">Ver Detalles</a>
+                        
+                        <% if (proyecto.idUsuarioAdmin === usuario.id) { %>
+                            <a href="/proyectos/editar/<%= proyecto.idProyecto %>" class="edit-btn">Editar</a>
+                            <form action="/proyectos/eliminar/<%= proyecto.idProyecto %>" method="POST" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto? Todas las tareas y subtareas asociadas también se eliminarán.');">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit" class="delete-btn">Eliminar</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p class="no-projects">No tienes proyectos aún. ¡Crea uno!</p>
+    <% } %>
+
+    <p class="logout-link"><a href="/logout">Cerrar Sesión</a></p>
+</body>
+</html>
