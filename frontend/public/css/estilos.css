@@ -1,12 +1,17 @@
-/* Paleta base */
+/* Nueva paleta de colores */
 :root {
-  --color-bg: #31231D;
-  --color-panel: #B86B57;
-  --color-accent: #ED7441;
-  --color-dark: #3E2E2E;
-  --color-border: #5A3A2D;
-  --color-light: #E0F4D4;
-  --color-text: #FFFFFF;
+  --color-background: #F7F8FA;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B7280;
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-primary-light: #DBEAFE;
+  --color-border: #E5E7EB;
+  --color-white: #FFFFFF;
+  --color-shadow: rgba(26, 26, 26, 0.1);
 }
 
 * {
@@ -16,8 +21,8 @@
 }
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--color-background);
+  color: var(--color-white);
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   justify-content: center;
@@ -27,17 +32,17 @@ body {
 
 /* Contenedor central */
 .card {
-  background-color: var(--color-panel);
+  background-color: var(--color-white);
   border: 2px solid var(--color-border);
   border-radius: 12px;
   padding: 30px 40px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  box-shadow: 0 0 15px var(--color-shadow);
 }
 
 .card h1, .card h2 {
-  color: var(--color-dark);
+  color: var(--color-text-primary);
   text-align: center;
   margin-bottom: 20px;
 }
@@ -51,7 +56,7 @@ form {
 label {
   margin: 10px 0 5px;
   font-weight: bold;
-  color: var(--color-dark);
+  color: var(--color-text-primary);
 }
 
 input[type="email"],
@@ -61,8 +66,8 @@ input[type="file"] {
   padding: 10px;
   border: 2px solid var(--color-border);
   border-radius: 6px;
-  background-color: var(--color-light);
-  color: var(--color-dark);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
 }
 
 input[type="radio"] {
@@ -73,7 +78,7 @@ button,
 input[type="submit"] {
   margin-top: 20px;
   padding: 10px;
-  background-color: var(--color-accent);
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -84,17 +89,17 @@ input[type="submit"] {
 
 button:hover,
 input[type="submit"]:hover {
-  background-color: #d85f2b;
+  background-color: var(--color-primary-hover);
 }
 
 small {
   font-size: 0.85em;
-  color: var(--color-dark);
+  color: var(--color-text-secondary);
 }
 
 .mensaje {
   background-color: #fff0f0;
-  color: #a00;
+  color: var(--color-error);
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 6px;
@@ -126,7 +131,7 @@ small {
 }
 
 .imagenes-container input[type="radio"]:checked + img {
-  border: 2px solid var(--color-accent);
+  border: 2px solid var(--color-primary);
 }
 
 /* Responsivo */
@@ -145,42 +150,36 @@ small {
 ===============================================
 SISTEMA DE GESTIÓN DE TAREAS - ESTILOS CSS
 ===============================================
-Paleta de colores basada en las especificaciones del proyecto:
-- #B67253 (Marrón claro)
-- #8B6857 (Marrón medio) 
-- #E07441 (Naranja)
-- #61534D (Marrón oscuro)
-- #36312E (Negro/Marrón muy oscuro)
-- #332823 (Negro base)
+Nueva paleta de colores aplicada
 ===============================================
 */
 
 /* ===== VARIABLES CSS PERSONALIZADAS ===== */
 :root {
-    /* Paleta de colores principal */
-    --color-primary: #E07441;        /* Naranja principal */
-    --color-secondary: #B67253;      /* Marrón claro */
-    --color-accent: #8B6857;         /* Marrón medio */
-    --color-dark: #61534D;           /* Marrón oscuro */
-    --color-darker: #36312E;         /* Negro/Marrón muy oscuro */
-    --color-darkest: #332823;        /* Negro base */
+    /* Paleta de colores principal - NUEVA */
+    --color-primary: #3B82F6;           /* Azul brillante */
+    --color-secondary: #6B7280;         /* Gris medio */
+    --color-accent: #2563EB;            /* Azul más oscuro */
+    --color-dark: #1A1A1A;              /* Negro suave */
+    --color-darker: #1A1A1A;            /* Negro suave */
+    --color-darkest: #1A1A1A;           /* Negro suave */
     
     /* Colores complementarios */
-    --color-light: #F8F9FA;          /* Blanco suave */
-    --color-white: #FFFFFF;          /* Blanco puro */
-    --color-muted: #6C757D;          /* Gris medio */
-    --color-border: #DEE2E6;         /* Gris claro para bordes */
+    --color-light: #F7F8FA;             /* Gris cálido claro */
+    --color-white: #FFFFFF;             /* Blanco puro */
+    --color-muted: #6B7280;             /* Gris medio */
+    --color-border: #E5E7EB;            /* Gris claro para bordes */
     
     /* Estados */
-    --color-success: #198754;        /* Verde para éxito */
-    --color-warning: #FFC107;        /* Amarillo para advertencias */
-    --color-danger: #DC3545;         /* Rojo para errores */
-    --color-info: #0DCAF0;           /* Azul para información */
+    --color-success: #10B981;           /* Verde para éxito */
+    --color-warning: #F59E0B;           /* Amarillo dorado para advertencias */
+    --color-danger: #EF4444;            /* Rojo para errores */
+    --color-info: #3B82F6;              /* Azul para información */
     
     /* Sombras y efectos */
-    --shadow-sm: 0 0.125rem 0.25rem rgba(54, 40, 35, 0.075);
-    --shadow-md: 0 0.5rem 1rem rgba(54, 40, 35, 0.15);
-    --shadow-lg: 0 1rem 3rem rgba(54, 40, 35, 0.175);
+    --shadow-sm: 0 0.125rem 0.25rem rgba(26, 26, 26, 0.075);
+    --shadow-md: 0 0.5rem 1rem rgba(26, 26, 26, 0.15);
+    --shadow-lg: 0 1rem 3rem rgba(26, 26, 26, 0.175);
     
     /* Transiciones */
     --transition-fast: 0.15s ease-in-out;
@@ -208,10 +207,10 @@ body {
 
 /* ===== HEADER PRINCIPAL ===== */
 .header-section {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
     color: var(--color-white);
     box-shadow: var(--shadow-md);
-    border-bottom: 3px solid var(--color-accent);
+    border-bottom: 3px solid var(--color-primary-hover);
 }
 
 .main-title {
@@ -388,7 +387,7 @@ body {
     top: 0;
     width: 5px;
     height: 100%;
-    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent));
     transition: var(--transition-fast);
 }
 
@@ -599,7 +598,7 @@ body {
 
 /* ===== DESTACADO DE BÚSQUEDA ===== */
 .search-highlight {
-    background-color: rgba(224, 116, 65, 0.3);
+    background-color: rgba(59, 130, 246, 0.3);
     font-weight: bold;
     padding: 0.1rem 0.2rem;
     border-radius: 3px;

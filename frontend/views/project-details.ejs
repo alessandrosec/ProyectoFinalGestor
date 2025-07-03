@@ -6,137 +6,259 @@
     <title>Detalles del Proyecto: <%= proyecto.nombreProyecto %></title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Estilos generales para el cuerpo */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1, h2, h3 { color: #0056b3; margin-bottom: 15px; }
-        p { line-height: 1.6; }
-        .info-section { margin-bottom: 25px; padding: 15px; background-color: #e9f7ff; border-left: 5px solid #007bff; border-radius: 4px; }
-        .info-section strong { color: #004085; }
+ /* Estilos generales para el cuerpo */
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 20px; 
+        background-color: #F7F8FA; 
+        color: #1A1A1A; 
+    }
+    .container { 
+        max-width: 900px; 
+        margin: auto; 
+        background-color: #FFFFFF; 
+        padding: 30px; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 4px rgba(26, 26, 26, 0.1); 
+    }
+    h1, h2, h3 { 
+        color: #3B82F6; 
+        margin-bottom: 15px; 
+    }
+    p { 
+        line-height: 1.6; 
+    }
+    .info-section { 
+        margin-bottom: 25px; 
+        padding: 15px; 
+        background-color: #DBEAFE; 
+        border-left: 5px solid #3B82F6; 
+        border-radius: 4px; 
+    }
+    .info-section strong { 
+        color: #1E40AF; 
+    }
 
-        /* Estilos para los botones de acción del proyecto */
-        .project-actions-top { margin-bottom: 25px; display: flex; gap: 10px; }
-        .project-actions-top a, .project-actions-top button {
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
-        .project-actions-top .edit-btn { background-color: #ffc107; color: #333; }
-        .project-actions-top .edit-btn:hover { background-color: #e0a800; }
-        .project-actions-top .delete-btn { background-color: #dc3545; color: white; }
-        .project-actions-top .delete-btn:hover { background-color: #c82333; }
-        .project-actions-top .delete-form { display: inline-block; }
+    /* Estilos para los botones de acción del proyecto */
+    .project-actions-top { 
+        margin-bottom: 25px; 
+        display: flex; 
+        gap: 10px; 
+    }
+    .project-actions-top a, .project-actions-top button {
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .project-actions-top .edit-btn { 
+        background-color: #F59E0B; 
+        color: #1A1A1A; 
+    }
+    .project-actions-top .edit-btn:hover { 
+        background-color: #D97706; 
+    }
+    .project-actions-top .delete-btn { 
+        background-color: #EF4444; 
+        color: white; 
+    }
+    .project-actions-top .delete-btn:hover { 
+        background-color: #DC2626; 
+    }
+    .project-actions-top .delete-form { 
+        display: inline-block; 
+    }
 
-        /* Miembros del proyecto */
-        .member-list { list-style: none; padding: 0; margin-top: 10px; }
-        .member-list li { background-color: #f0f8ff; border: 1px solid #cceeff; margin-bottom: 8px; padding: 10px; border-radius: 5px; }
+    /* Miembros del proyecto */
+    .member-list { 
+        list-style: none; 
+        padding: 0; 
+        margin-top: 10px; 
+    }
+    .member-list li { 
+        background-color: #F0F9FF; 
+        border: 1px solid #BFDBFE; 
+        margin-bottom: 8px; 
+        padding: 10px; 
+        border-radius: 5px; 
+    }
 
-        /* Formulario de Tareas */
-        .task-form-section, .subtask-form-section {
-            background-color: #f8f9fa;
-            border: 1px solid #e2e6ea;
-            padding: 20px;
-            margin-top: 30px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-        }
-        .task-form-section h3, .subtask-form-section h3 { color: #007bff; margin-top: 0; }
-        .task-form-section label, .subtask-form-section label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .task-form-section input[type="text"],
-        .task-form-section input[type="date"],
-        .task-form-section select,
-        .task-form-section textarea,
-        .subtask-form-section input[type="text"],
-        .subtask-form-section input[type="date"],
-        .subtask-form-section select,
-        .subtask-form-section textarea {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .task-form-section button, .subtask-form-section button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        .task-form-section button:hover, .subtask-form-section button:hover {
-            background-color: #0056b3;
-        }
-        .error-message { color: red; margin-bottom: 15px; }
-        .success-message { color: green; margin-bottom: 15px; }
+    /* Formulario de Tareas */
+    .task-form-section, .subtask-form-section {
+        background-color: #F7F8FA;
+        border: 1px solid #E5E7EB;
+        padding: 20px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+    }
+    .task-form-section h3, .subtask-form-section h3 { 
+        color: #3B82F6; 
+        margin-top: 0; 
+    }
+    .task-form-section label, .subtask-form-section label { 
+        display: block; 
+        margin-bottom: 5px; 
+        font-weight: bold; 
+    }
+    .task-form-section input[type="text"],
+    .task-form-section input[type="date"],
+    .task-form-section select,
+    .task-form-section textarea,
+    .subtask-form-section input[type="text"],
+    .subtask-form-section input[type="date"],
+    .subtask-form-section select,
+    .subtask-form-section textarea {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #E5E7EB;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .task-form-section button, .subtask-form-section button {
+        background-color: #3B82F6;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+    }
+    .task-form-section button:hover, .subtask-form-section button:hover {
+        background-color: #2563EB;
+    }
+    .error-message { 
+        color: #EF4444; 
+        margin-bottom: 15px; 
+    }
+    .success-message { 
+        color: #10B981; 
+        margin-bottom: 15px; 
+    }
 
-        /* Lista de Tareas */
-        .task-list { margin-top: 20px; }
-        .task-item {
-            border: 1px solid #cceeff;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            background-color: #f0f8ff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
-        .task-item h4 { margin-top: 0; color: #0056b3; }
-        .task-item p { margin: 5px 0; }
-        .task-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .task-actions a, .task-actions button {
-            padding: 5px 10px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
-        .task-actions .details-btn { background-color: #007bff; color: white; }
-        .task-actions .details-btn:hover { background-color: #0056b3; }
-        .task-actions .edit-btn { background-color: #ffc107; color: #333; }
-        .task-actions .edit-btn:hover { background-color: #e0a800; }
-        .task-actions .delete-btn { background-color: #dc3545; color: white; }
-        .task-actions .delete-btn:hover { background-color: #c82333; }
-        .task-actions .subtask-create-btn { background-color: #6c757d; color: white; }
-        .task-actions .subtask-create-btn:hover { background-color: #5a6268; }
+    /* Lista de Tareas */
+    .task-list { 
+        margin-top: 20px; 
+    }
+    .task-item {
+        border: 1px solid #BFDBFE;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background-color: #F0F9FF;
+        box-shadow: 0 1px 3px rgba(26, 26, 26, 0.08);
+    }
+    .task-item h4 { 
+        margin-top: 0; 
+        color: #3B82F6; 
+    }
+    .task-item p { 
+        margin: 5px 0; 
+    }
+    .task-actions { 
+        margin-top: 10px; 
+        display: flex; 
+        gap: 8px; 
+        flex-wrap: wrap; 
+    }
+    .task-actions a, .task-actions button {
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.9em;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .task-actions .details-btn { 
+        background-color: #3B82F6; 
+        color: white; 
+    }
+    .task-actions .details-btn:hover { 
+        background-color: #2563EB; 
+    }
+    .task-actions .edit-btn { 
+        background-color: #F59E0B; 
+        color: #1A1A1A; 
+    }
+    .task-actions .edit-btn:hover { 
+        background-color: #D97706; 
+    }
+    .task-actions .delete-btn { 
+        background-color: #EF4444; 
+        color: white; 
+    }
+    .task-actions .delete-btn:hover { 
+        background-color: #DC2626; 
+    }
+    .task-actions .subtask-create-btn { 
+        background-color: #6B7280; 
+        color: white; 
+    }
+    .task-actions .subtask-create-btn:hover { 
+        background-color: #374151; 
+    }
 
-        /* Lista de Subtareas (anidada) */
-        .subtask-list { list-style: none; padding: 0; margin-top: 15px; border-top: 1px dashed #cceeff; padding-top: 10px; }
-        .subtask-item {
-            background-color: #ffffff;
-            border: 1px dashed #e2e6ea;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 5px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            font-size: 0.95em;
-        }
-        .subtask-item strong { color: #555; }
-        .subtask-actions { margin-top: 8px; display: flex; gap: 5px; }
-        .subtask-actions a, .subtask-actions button {
-             padding: 4px 8px;
-             border-radius: 3px;
-             font-size: 0.8em;
-             text-decoration: none;
-             font-weight: bold;
-             cursor: pointer;
-             border: none;
-             transition: background-color 0.3s ease;
-         }
-        .subtask-actions .edit-btn { background-color: #ffc107; color: #333; }
-        .subtask-actions .delete-btn { background-color: #dc3545; color: white; }
+    /* Lista de Subtareas (anidada) */
+    .subtask-list { 
+        list-style: none; 
+        padding: 0; 
+        margin-top: 15px; 
+        border-top: 1px dashed #BFDBFE; 
+        padding-top: 10px; 
+    }
+    .subtask-item {
+        background-color: #FFFFFF;
+        border: 1px dashed #E5E7EB;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 5px;
+        box-shadow: 0 1px 2px rgba(26, 26, 26, 0.05);
+        font-size: 0.95em;
+    }
+    .subtask-item strong { 
+        color: #6B7280; 
+    }
+    .subtask-actions { 
+        margin-top: 8px; 
+        display: flex; 
+        gap: 5px; 
+    }
+    .subtask-actions a, .subtask-actions button {
+         padding: 4px 8px;
+         border-radius: 3px;
+         font-size: 0.8em;
+         text-decoration: none;
+         font-weight: bold;
+         cursor: pointer;
+         border: none;
+         transition: background-color 0.3s ease;
+     }
+    .subtask-actions .edit-btn { 
+        background-color: #F59E0B; 
+        color: #1A1A1A; 
+    }
+    .subtask-actions .delete-btn { 
+        background-color: #EF4444; 
+        color: white; 
+    }
 
-        .back-link { display: inline-block; margin-top: 30px; color: #007bff; text-decoration: none; font-weight: bold; }
-        .back-link:hover { text-decoration: underline; }
+    .back-link { 
+        display: inline-block; 
+        margin-top: 30px; 
+        color: #3B82F6; 
+        text-decoration: none; 
+        font-weight: bold; 
+    }
+    .back-link:hover { 
+        text-decoration: underline; 
+    }
     </style>
 </head>
 <body>

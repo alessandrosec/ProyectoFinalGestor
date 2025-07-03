@@ -6,41 +6,78 @@
     <title>Editar Subtarea: <%= subtarea.nombreSubtarea %></title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 700px; margin: auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #0056b3; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"],
-        input[type="date"],
-        select,
-        textarea {
-            width: calc(100% - 22px); /* Ajuste para el padding */
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        button:hover { background-color: #0056b3; }
-        .cancel-btn {
-            background-color: #6c757d;
-            margin-left: 10px;
-        }
-        .cancel-btn:hover { background-color: #5a6268; }
-        .error-message { color: red; margin-bottom: 15px; }
-        .success-message { color: green; margin-bottom: 15px; }
-        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; font-weight: bold; }
-        .back-link:hover { text-decoration: underline; }
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 20px; 
+        background-color: #F7F8FA; 
+        color: #1A1A1A; 
+    }
+    .container { 
+        max-width: 700px; 
+        margin: auto; 
+        background-color: #FFFFFF; 
+        padding: 30px; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 4px rgba(26, 26, 26, 0.1); 
+    }
+    h1 { 
+        color: #3B82F6; 
+        margin-bottom: 20px; 
+    }
+    label { 
+        display: block; 
+        margin-bottom: 5px; 
+        font-weight: bold; 
+    }
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #E5E7EB;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    button {
+        background-color: #3B82F6;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+    }
+    button:hover { 
+        background-color: #2563EB; 
+    }
+    .cancel-btn {
+        background-color: #6B7280;
+        margin-left: 10px;
+    }
+    .cancel-btn:hover { 
+        background-color: #374151; 
+    }
+    .error-message { 
+        color: #EF4444; 
+        margin-bottom: 15px; 
+    }
+    .success-message { 
+        color: #10B981; 
+        margin-bottom: 15px; 
+    }
+    .back-link { 
+        display: inline-block; 
+        margin-top: 20px; 
+        color: #3B82F6; 
+        text-decoration: none; 
+        font-weight: bold; 
+    }
+    .back-link:hover { 
+        text-decoration: underline; 
+    }
     </style>
 </head>
 <body>
