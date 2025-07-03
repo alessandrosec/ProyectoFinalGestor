@@ -4,15 +4,16 @@ const session = require('express-session');
 const path = require('path');
 const { generateCsrfToken } = require('./backend/middlewares/csrf');
 const helmet = require('helmet');
-const projectRoutes = require('./backend/routes/project'); // Nuevo
+const projectRoutes = require('./backend/routes/project');
+const apiRoutes = require('./backend/routes/api'); // 🔥 NUEVA LÍNEA
 require('dotenv').config();
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.urlencoded({ extended: true })); //Permite leer los datos de los formularios
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'frontend', 'public'))); //Habilita la carpeta para imagenes y archivos estaticos
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // 🔥 IMPORTANTE: Para parsear JSON en requests API
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
@@ -22,33 +23,44 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    httpOnly: true, // Previene que JavaScript del lado del cliente acceda a la cookie (protección contra XSS)
-    maxAge: 1000 * 60 * 60 * 24, // Duración de la cookie en milisegundos (aquí, 24 horas)
-    sameSite: 'Lax' // Previene ataques CSRF
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24, // 24 horas
+    sameSite: 'Lax'
   }
 }));
 app.use(generateCsrfToken);
 
-// Configura el motor de veista para los archivos .ejs
+// Configura el motor de vista para los archivos .ejs
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname,'frontend', 'views'));
 
 // Rutas
-const authRoutes = require('./backend/routes/auth'); //Importa la ruta de autenticacion 
-const apiRoutes = require ('./backend/routes/api')
-
+const authRoutes = require('./backend/routes/auth');
 app.use('/', authRoutes);
-app.use('/', projectRoutes); // Nuevo: Usar las rutas de proyectos
-app.use('/api', apiRoutes);// Línea Nueva
+app.use('/', projectRoutes); // Rutas tradicionales (formularios)
+app.use('/api', apiRoutes); // 🔥 NUEVA LÍNEA: Rutas API (JSON)
 
 // Middleware para manejo de errores 
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Muestra el stack trace del error en la consola 
+  console.error(err.stack);
+  
+  // Si es una petición API, responder con JSON
+  if (req.path.startsWith('/api/')) {
+    return res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor',
+      code: 'SERVER_ERROR'
+    });
+  }
+  
+  // Si es una petición tradicional, responder con HTML
   res.status(500).send('¡Algo salió mal en el servidor!');
 });
 
-// Arraca el servidor 
+// Arranca el servidor 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🔥 API REST disponible en http://localhost:${PORT}/api`);
+  console.log(`📊 Dashboard en http://localhost:${PORT}/index`);
 });
