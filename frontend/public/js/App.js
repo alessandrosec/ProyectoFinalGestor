@@ -1877,3 +1877,361 @@ function updateSearchResultsCount() {
     }
 }
 
+
+  // MOSTRAR TOAST MEJORADO CON TIPOS
+
+function showToast(message, type = 'info', title = 'Notificación') {
+    const toast = document.getElementById('mainToast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    if (!toast || !toastIcon || !toastTitle || !toastMessage) return;
+    
+    // Configurar icono y colores según tipo
+    const typeConfig = {
+        success: {
+            icon: 'bi-check-circle-fill text-success',
+            title: title || 'Éxito'
+        },
+        error: {
+            icon: 'bi-x-circle-fill text-danger',
+            title: title || 'Error'
+        },
+        warning: {
+            icon: 'bi-exclamation-triangle-fill text-warning',
+            title: title || 'Advertencia'
+        },
+        info: {
+            icon: 'bi-info-circle-fill text-primary',
+            title: title || 'Información'
+        }
+    };
+    
+    const config = typeConfig[type] || typeConfig.info;
+    
+    toastIcon.className = `bi ${config.icon} me-2`;
+    toastTitle.textContent = config.title;
+    toastMessage.textContent = message;
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+
+/**
+ * MOSTRAR TOAST DE CARGA
+ */
+function showLoadingToast(message) {
+    const toast = document.getElementById('mainToast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    if (!toast) return;
+    
+    toastIcon.className = 'spinner-border spinner-border-sm text-primary me-2';
+    toastTitle.textContent = 'Cargando...';
+    toastMessage.textContent = message;
+    
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    bsToast.show();
+    
+    return bsToast;
+}
+
+/**
+ * OCULTAR TOAST DE CARGA
+ */
+function hideLoadingToast() {
+    const toast = document.getElementById('mainToast');
+    if (toast) {
+        const bsToast = bootstrap.Toast.getInstance(toast);
+        if (bsToast) {
+            bsToast.hide();
+        }
+    }
+}
+
+/**
+ * ACTUALIZAR ESTADO DE CONEXIÓN
+ */
+function updateConnectionStatus(status) {
+    const connectionStatus = document.getElementById('connectionStatus');
+    const connectionText = document.getElementById('connectionText');
+    
+    if (!connectionStatus || !connectionText) return;
+    
+    connectionStatus.classList.remove('d-none');
+    
+    switch (status) {
+        case 'connected':
+            connectionStatus.className = 'connection-status connected';
+            connectionText.textContent = 'Conectado';
+            break;
+        case 'mock':
+            connectionStatus.className = 'connection-status connecting';
+            connectionText.textContent = 'Modo Demo';
+            break;
+        case 'error':
+            connectionStatus.className = 'connection-status disconnected';
+            connectionText.textContent = 'Sin conexión';
+            break;
+    }
+    
+    // Ocultar después de 3 segundos si está conectado
+    if (status === 'connected') {
+        setTimeout(() => {
+            connectionStatus.classList.add('d-none');
+        }, 3000);
+    }
+}
+
+/**
+ * ACTUALIZAR TIEMPO DE ÚLTIMA ACTUALIZACIÓN
+ */
+function updateLastUpdateTime() {
+    appState.cache.lastRefresh = new Date();
+    console.log(`🕒 Última actualización: ${appState.cache.lastRefresh.toLocaleTimeString()}`);
+}
+
+/**
+ * VERIFICAR ACTUALIZACIONES
+ */
+async function checkForUpdates() {
+    if (!appState.ui.apiConnected) return;
+    
+    try {
+        const response = await projectAPI.getAllProjects();
+        if (response.success) {
+            await processProjectsData(response.data);
+            console.log('🔄 Datos actualizados automáticamente');
+        }
+    } catch (error) {
+        console.warn('Error en actualización automática:', error);
+    }
+}
+
+/**
+ * CONFIGURAR LAZY LOADING
+ */
+function setupLazyLoading() {
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Cargar contenido adicional si es necesario
+                    console.log('🔍 Elemento visible:', entry.target);
+                }
+            });
+        });
+        
+        // Observar contenedores de proyectos
+        const containers = document.querySelectorAll('.projects-container');
+        containers.forEach(container => observer.observe(container));
+    }
+}
+
+/**
+ * CONFIGURAR DETECCIÓN DE CAMBIO DE VENTANA
+ */
+function setupWindowResize() {
+    let resizeTimeout;
+    
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            console.log('📱 Ventana redimensionada, ajustando layout...');
+            // Reinicializar tooltips o ajustar layout si es necesario
+            initializeTooltips();
+        }, 250);
+    });
+}
+
+/**
+ * CONFIGURAR DETECCIÓN DE RED
+ */
+function setupNetworkDetection() {
+    window.addEventListener('online', () => {
+        appState.ui.apiConnected = true;
+        updateConnectionStatus('connected');
+        showToast('✅ Conexión restaurada', 'success');
+        checkForUpdates();
+    });
+    
+    window.addEventListener('offline', () => {
+        appState.ui.apiConnected = false;
+        updateConnectionStatus('error');
+        showToast('📡 Sin conexión a internet', 'warning');
+    });
+}
+
+/**
+ * CONFIGURAR MANEJO DE ERRORES GLOBAL
+ */
+function setupGlobalErrorHandling() {
+    window.addEventListener('error', (event) => {
+        console.error('💥 Error global capturado:', event.error);
+        
+        if (APP_CONFIG.debugMode) {
+            showToast(`Error: ${event.error.message}`, 'error');
+        }
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('💥 Promesa rechazada no manejada:', event.reason);
+        
+        if (APP_CONFIG.debugMode) {
+            showToast('Error en operación asíncrona', 'error');
+        }
+    });
+}
+
+/**
+ * TOGGLE MODO DEBUG
+ */
+function toggleDebugMode() {
+    APP_CONFIG.debugMode = !APP_CONFIG.debugMode;
+    console.log(`🐛 Modo debug: ${APP_CONFIG.debugMode ? 'ACTIVADO' : 'DESACTIVADO'}`);
+    
+    if (APP_CONFIG.debugMode) {
+        showToast('Modo debug activado', 'info');
+        console.log('Estado de la aplicación:', appState);
+        console.log('Estadísticas de caché:', window.apiDebug?.getCacheStats());
+    }
+}
+
+/**
+ * MANEJO DEL MODAL DE PROYECTO
+ */
+function setupProjectModal() {
+    const createProjectBtn = document.getElementById('createProjectBtn');
+    const createFirstProject = document.getElementById('createFirstProject');
+    const saveProjectBtn = document.getElementById('saveProjectBtn');
+    const projectForm = document.getElementById('projectForm');
+    
+    if (createProjectBtn) {
+        createProjectBtn.addEventListener('click', () => openProjectModal());
+    }
+    
+    if (createFirstProject) {
+        createFirstProject.addEventListener('click', () => openProjectModal());
+    }
+    
+    if (saveProjectBtn && projectForm) {
+        saveProjectBtn.addEventListener('click', () => handleSaveProject());
+    }
+}
+
+/**
+ * ABRIR MODAL DE PROYECTO
+ */
+function openProjectModal(project = null) {
+    const modal = document.getElementById('projectModal');
+    const modalTitle = document.getElementById('projectModalLabel');
+    const form = document.getElementById('projectForm');
+    
+    if (!modal || !form) return;
+    
+    // Limpiar formulario
+    form.reset();
+    
+    if (project) {
+        // Modo edición
+        modalTitle.textContent = 'Editar Proyecto';
+        document.getElementById('projectId').value = project.id;
+        document.getElementById('projectName').value = project.name;
+        document.getElementById('projectDescription').value = project.description;
+        document.getElementById('projectStartDate').value = project.startDate?.split('T')[0] || '';
+        document.getElementById('projectEndDate').value = project.endDate?.split('T')[0] || '';
+        document.getElementById('projectStatus').value = project.status;
+    } else {
+        // Modo creación
+        modalTitle.textContent = 'Crear Nuevo Proyecto';
+        document.getElementById('projectStartDate').value = new Date().toISOString().split('T')[0];
+    }
+    
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+/**
+ * GUARDAR PROYECTO
+ */
+async function handleSaveProject() {
+    const form = document.getElementById('projectForm');
+    const saveBtn = document.getElementById('saveProjectBtn');
+    
+    if (!form || !form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const formData = new FormData(form);
+    const projectData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate'),
+        status: formData.get('status')
+    };
+    
+    const projectId = formData.get('projectId');
+    const isEdit = projectId && projectId !== '';
+    
+    // Mostrar estado de carga
+    const originalText = saveBtn.textContent;
+    saveBtn.textContent = 'Guardando...';
+    saveBtn.disabled = true;
+    
+    try {
+        let response;
+        
+        if (isEdit) {
+            response = await projectAPI.updateProject(projectId, projectData);
+        } else {
+            response = await projectAPI.createProject(projectData);
+        }
+        
+        if (response.success) {
+            showToast(`✅ Proyecto ${isEdit ? 'actualizado' : 'creado'} correctamente`, 'success');
+            
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('projectModal'));
+            modal.hide();
+            
+            // Recargar datos
+            await loadInitialData();
+        } else {
+            showToast(`❌ Error: ${response.error}`, 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error al guardar proyecto:', error);
+        showToast('❌ Error de conexión al guardar', 'error');
+    } finally {
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+    }
+}
+
+/**
+ * INICIALIZAR MEJORAS AL CARGAR
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar modal de proyecto
+    setupProjectModal();
+    
+    // Verificar si hay mensajes del servidor
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    const messageType = urlParams.get('type');
+    
+    if (message) {
+        showToast(decodeURIComponent(message), messageType || 'info');
+        
+        // Limpiar URL
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+});
+
+console.log('🔧 Mejoras adicionales de App.js cargadas');

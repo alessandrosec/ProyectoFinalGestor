@@ -1,15 +1,6 @@
 /**
  * ===============================================
  * API.JS - FUNCIONES DE CONEXIÓN CON BACKEND (MEJORADO)
- * ===============================================
-<<<<<<< HEAD
- * MEJORAS APLICADAS:
- * 1. Compatibilidad con más navegadores (AbortController)
- * 2. Mejor manejo de timeouts
- * 3. Funciones de validación mejoradas
- * 4. Caché local implementado
- * 5. Retry logic para conexiones fallidas
-=======
  * Este archivo contiene todas las funciones para comunicarse
  * con el backend del sistema de gestión de tareas.
  * 
@@ -320,13 +311,13 @@ class ProjectAPI {
      * @returns {Promise} Estado del servidor
      */
     async checkHealth() {
-        console.log('🏥 Verificando estado del servidor...');
-        return await this.makeRequest('/health', 'GET', null, { 
-            useCache: false, 
-            skipRetry: true,
-            timeout: 5000 
-        });
-    }
+    console.log('🏥 Verificando estado del servidor...');
+    return await this.makeRequest('/health', 'GET', null, { 
+        useCache: false, 
+        skipRetry: true,
+        timeout: 5000 
+    });
+}
 
     /**
      * OBTENER TODOS LOS PROYECTOS (CON CACHÉ)
@@ -343,9 +334,24 @@ class ProjectAPI {
      * @returns {Promise} Lista de proyectos filtrados por estado
      */
     async getProjectsByStatus(status) {
-        console.log(`🔄 Obteniendo proyectos con estado: ${status}...`);
-        return await this.makeRequest(`/projects?status=${encodeURIComponent(status)}`, 'GET');
+    console.log(`🔄 Obteniendo proyectos con estado: ${status}...`);
+    
+    // Primero obtenemos todos los proyectos
+    const allProjects = await this.getAllProjects();
+    
+    if (!allProjects.success) {
+        return allProjects;
     }
+    
+    // Filtramos por estado en el frontend
+    const filteredProjects = allProjects.data.filter(project => project.status === status);
+    
+    return {
+        success: true,
+        data: filteredProjects,
+        status: 200
+    };
+}
 
     /**
      * BUSCAR PROYECTOS POR NOMBRE O ID (CON CACHÉ)
@@ -967,117 +973,59 @@ const projectAPI = new ProjectAPI();
 const MOCK_DATA = {
     projects: [
         {
-            id: "PROJ001",
+            id: "1",
             name: "Sistema de Inventario",
             startDate: "2025-01-15",
             endDate: "2025-03-15",
-            description: "Desarrollo de sistema integral para gestión de inventario con funcionalidades de seguimiento en tiempo real, reportes automatizados y alertas de stock bajo. Incluye módulos de entrada, salida, transferencias y auditorías.",
+            description: "Desarrollo de sistema integral para gestión de inventario con funcionalidades de seguimiento en tiempo real, reportes automatizados y alertas de stock bajo.",
             status: "en_proceso",
             priority: "alta",
             users: [
                 {
-                    id: "user1",
+                    id: "1",
                     name: "María González",
-                    role: "Project Manager",
+                    role: "admin",
                     profileImage: "https://images.unsplash.com/photo-1494790108755-2616b9ec3b1a?w=150&h=150&fit=crop&crop=face"
                 },
                 {
-                    id: "user2", 
+                    id: "2", 
                     name: "Carlos Mendoza",
-                    role: "Full Stack Developer",
+                    role: "miembro",
                     profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-                },
-                {
-                    id: "user3",
-                    name: "Ana Rodríguez",
-                    role: "UI/UX Designer",
-                    profileImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
                 }
             ]
         },
         {
-            id: "PROJ002",
+            id: "2",
             name: "App Móvil E-commerce",
             startDate: "2025-02-01",
             endDate: "2025-05-30",
-            description: "Aplicación móvil completa para comercio electrónico con carrito de compras, pagos seguros, seguimiento de pedidos y notificaciones push. Compatible con iOS y Android, integración con múltiples métodos de pago.",
+            description: "Aplicación móvil completa para comercio electrónico con carrito de compras, pagos seguros, seguimiento de pedidos y notificaciones push.",
             status: "en_proceso",
             priority: "alta",
             users: [
                 {
-                    id: "user4",
+                    id: "3",
                     name: "Roberto Silva",
-                    role: "Mobile Developer",
+                    role: "admin",
                     profileImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-                },
-                {
-                    id: "user5",
-                    name: "Laura Vásquez",
-                    role: "Backend Developer",
-                    profileImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
                 }
             ]
         },
         {
-            id: "PROJ003",
+            id: "3",
             name: "Portal Web Corporativo",
             startDate: "2024-11-01",
             endDate: "2025-01-15",
-            description: "Sitio web corporativo moderno con sistema de gestión de contenidos, blog integrado y panel administrativo completo. Optimizado para SEO, responsive design y alta velocidad de carga.",
+            description: "Sitio web corporativo moderno con sistema de gestión de contenidos, blog integrado y panel administrativo completo.",
             status: "terminado",
             priority: "media",
             users: [
                 {
-                    id: "user6",
+                    id: "4",
                     name: "Diego Herrera",
-                    role: "Frontend Developer",
+                    role: "admin",
                     profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
-                }
-            ]
-        },
-        {
-            id: "PROJ004",
-            name: "Sistema CRM",
-            startDate: "2024-09-15",
-            endDate: "2024-12-20",
-            description: "Customer Relationship Management system con automatización de ventas, seguimiento de clientes potenciales, gestión de pipeline y reportes avanzados. Integración con email marketing y herramientas de comunicación.",
-            status: "terminado",
-            priority: "alta",
-            users: [
-                {
-                    id: "user7",
-                    name: "Patricia Morales",
-                    role: "Business Analyst",
-                    profileImage: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face"
-                },
-                {
-                    id: "user8",
-                    name: "Andrés López",
-                    role: "Backend Developer",
-                    profileImage: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face"
-                }
-            ]
-        },
-        {
-            id: "PROJ005",
-            name: "Dashboard Analytics",
-            startDate: "2025-01-20",
-            endDate: "2025-04-10",
-            description: "Dashboard interactivo para análisis de datos empresariales con visualizaciones en tiempo real, métricas KPI personalizables y reportes automatizados.",
-            status: "en_proceso",
-            priority: "media",
-            users: [
-                {
-                    id: "user9",
-                    name: "Sofia Chen",
-                    role: "Data Analyst",
-                    profileImage: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face"
-                },
-                {
-                    id: "user10",
-                    name: "Miguel Torres",
-                    role: "Frontend Developer",
-                    profileImage: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face"
                 }
             ]
         }
@@ -1176,3 +1124,455 @@ window.apiDebug = {
 console.log('API.js mejorado cargado completamente');
 console.log('Funciones de debug disponibles en window.apiDebug');
 window.mockApiResponse = mockApiResponse;
+
+const APP_CONFIG = {
+    searchDelay: 300,
+    animationDuration: 300,
+    tooltipDelay: 500,
+    retryAttempts: 3,
+    useMockData: false, // 🔥 CAMBIAR A FALSE para usar API real
+    cacheRefreshInterval: 30000,
+    maxSearchHistory: 10,
+    autoSaveInterval: 60000,
+    debugMode: false
+};
+
+/**
+ * FUNCIONES ADICIONALES PARA MANEJO DE ERRORES
+ */
+
+// Agregar esta función al objeto ProjectAPI:
+async handleApiError(error, endpoint) {
+    console.error(`Error en ${endpoint}:`, error);
+    
+    // Si no hay conexión, usar datos mock como fallback
+    if (error.code === 'CONNECTION_ERROR' || error.code === 'TIMEOUT') {
+        console.log('🎭 Fallback a datos mock debido a error de conexión');
+        
+        // Simular respuesta según el endpoint
+        if (endpoint.includes('/projects')) {
+            return await mockApiResponse(MOCK_DATA.projects, 100);
+        }
+    }
+    
+    return error;
+}
+
+/**
+ * VALIDACIÓN DE RESPUESTA DE API
+ */
+function validateApiResponse(response, endpoint) {
+    if (!response) {
+        throw new Error('Respuesta vacía del servidor');
+    }
+    
+    if (!response.hasOwnProperty('success')) {
+        throw new Error('Formato de respuesta inválido');
+    }
+    
+    if (!response.success && !response.error) {
+        throw new Error('Respuesta de error sin mensaje');
+    }
+    
+    return true;
+}
+
+/**
+ * INTERCEPTOR PARA AGREGAR CSRF TOKEN A PETICIONES POST/PUT/DELETE
+ */
+function addCsrfTokenToRequest(config, method) {
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+        // Obtener CSRF token del meta tag o variable global
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                        || window.csrfToken;
+        
+        if (csrfToken && config.body) {
+            const body = JSON.parse(config.body);
+            body._csrf = csrfToken;
+            config.body = JSON.stringify(body);
+        }
+    }
+    return config;
+
+    
+    function showElement(element) {
+    if (element) {
+        element.classList.remove('d-none');
+    }
+}
+
+function hideElement(element) {
+    if (element) {
+        element.classList.add('d-none');
+    }
+}
+
+/**
+ * MOSTRAR ESTADO DE LOADING
+ */
+function showLoadingState(show) {
+    const activeLoading = domElements.activeLoading;
+    const completedLoading = domElements.completedLoading;
+    
+    if (show) {
+        showElement(activeLoading);
+        showElement(completedLoading);
+    } else {
+        hideElement(activeLoading);
+        hideElement(completedLoading);
+    }
+    
+    appState.ui.isLoading = show;
+}
+
+function showElement(element) {
+    if (element) {
+        element.classList.remove('d-none');
+    }
+}
+
+function hideElement(element) {
+    if (element) {
+        element.classList.add('d-none');
+    }
+}
+
+/**
+ * MOSTRAR ESTADO DE LOADING
+ */
+function showLoadingState(show) {
+    const activeLoading = domElements.activeLoading;
+    const completedLoading = domElements.completedLoading;
+    
+    if (show) {
+        showElement(activeLoading);
+        showElement(completedLoading);
+    } else {
+        hideElement(activeLoading);
+        hideElement(completedLoading);
+    }
+    
+    appState.ui.isLoading = show;
+}
+
+/**
+ * MOSTRAR/OCULTAR RESULTADOS DE BÚSQUEDA VACÍOS
+ */
+function showNoSearchResults(show) {
+    const noSearchResults = domElements.noSearchResults;
+    
+    if (show) {
+        showElement(noSearchResults);
+    } else {
+        hideElement(noSearchResults);
+    }
+}
+
+/**
+ * ACTUALIZAR CONTADORES DE PROYECTOS
+ */
+function updateProjectCounters() {
+    const activeCount = document.getElementById('activeCount');
+    const completedCount = document.getElementById('completedCount');
+    
+    if (activeCount) {
+        activeCount.textContent = appState.projects.filtered.active.length;
+    }
+    
+    if (completedCount) {
+        completedCount.textContent = appState.projects.filtered.completed.length;
+    }
+}
+
+/**
+ * ACTUALIZAR DISPLAY DE ESTADÍSTICAS
+ */
+function updateStatsDisplay() {
+    updateProjectCounters();
+    
+    // Actualizar estadísticas adicionales si hay contenedor
+    const statsContainer = domElements.statsContainer;
+    if (statsContainer && appState.stats) {
+        statsContainer.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">${appState.stats.totalProjects}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${appState.stats.activeProjects}</span>
+                    <span class="stat-label">Activos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${appState.stats.completedProjects}</span>
+                    <span class="stat-label">Completados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number text-danger">${appState.stats.overdueProjects}</span>
+                    <span class="stat-label">Atrasados</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
+/**
+ * INICIALIZAR TOOLTIPS DE BOOTSTRAP
+ */
+function initializeTooltips() {
+    try {
+        // Limpiar tooltips existentes
+        const existingTooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        existingTooltips.forEach(el => {
+            const tooltip = bootstrap.Tooltip.getInstance(el);
+            if (tooltip) {
+                tooltip.dispose();
+            }
+        });
+        
+        // Inicializar nuevos tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => 
+            new bootstrap.Tooltip(tooltipTriggerEl, {
+                delay: { show: APP_CONFIG.tooltipDelay, hide: 100 }
+            })
+        );
+        
+        console.log(`🔧 ${tooltipList.length} tooltips inicializados`);
+    } catch (error) {
+        console.warn('Error al inicializar tooltips:', error);
+    }
+}
+
+/**
+ * DESTACAR TÉRMINO DE BÚSQUEDA EN TEXTO
+ */
+function highlightSearchTerm(text, searchTerm) {
+    if (!text || !searchTerm || searchTerm.trim().length === 0) {
+        return text || '';
+    }
+    
+    const normalizedTerm = searchTerm.trim();
+    const regex = new RegExp(`(${normalizedTerm})`, 'gi');
+    
+    return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+}
+
+/**
+ * MOSTRAR ERROR CRÍTICO
+ */
+function showCriticalError(error) {
+    const errorMessage = typeof error === 'string' ? error : error.message || 'Error desconocido';
+    
+    showToast(`💥 Error crítico: ${errorMessage}`, 'error', 'Error del Sistema');
+    
+    // Mostrar pantalla de error si es muy grave
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent && errorMessage.includes('crítico')) {
+        mainContent.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-exclamation-triangle display-1 text-danger"></i>
+                <h3 class="mt-3">Error del Sistema</h3>
+                <p class="text-muted">${escapeHtml(errorMessage)}</p>
+                <button class="btn btn-primary" onclick="window.location.reload()">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    Recargar Página
+                </button>
+            </div>
+        `;
+    }
+}
+
+/**
+ * CREAR HTML PARA MODALES
+ */
+function createProjectDetailModalHtml(project) {
+    return `
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-folder-open me-2"></i>
+                        ${escapeHtml(project.name)}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Descripción</h6>
+                            <p>${escapeHtml(project.description)}</p>
+                            
+                            <h6>Fechas</h6>
+                            <p><strong>Inicio:</strong> ${formatDate(project.startDate)}</p>
+                            <p><strong>Entrega:</strong> ${formatDate(project.endDate)}</p>
+                            
+                            <h6>Estado</h6>
+                            <span class="badge ${project.status === 'terminado' ? 'bg-success' : 'bg-primary'}">
+                                ${project.status === 'terminado' ? 'Terminado' : 'En Proceso'}
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Equipo del Proyecto</h6>
+                            ${generateUsersHTML(project.users, 'modal')}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="/proyectos/${project.id}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right me-1"></i>
+                        Ver Detalles Completos
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createCompletedProjectModalHtml(project) {
+    return `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle me-2"></i>
+                        ${escapeHtml(project.name)} - Completado
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Descripción:</strong> ${escapeHtml(project.description)}</p>
+                    <p><strong>Completado el:</strong> ${formatDate(project.endDate)}</p>
+                    <p><strong>Duración:</strong> ${calculateProjectDuration(project.startDate, project.endDate)}</p>
+                    <p><strong>Equipo:</strong> ${project.users?.length || 0} personas</p>
+                    
+                    <h6>Miembros del Equipo</h6>
+                    ${generateUsersHTML(project.users, 'modal')}
+                </div>
+                <div class="modal-footer">
+                    <a href="/proyectos/${project.id}" class="btn btn-outline-primary">
+                        Ver Detalles Completos
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * MANEJADORES DE EVENTOS PARA PROYECTOS
+ */
+function handleProjectOpen(projectId) {
+    console.log('🔗 Abriendo proyecto:', projectId);
+    window.location.href = `/proyectos/${projectId}`;
+}
+
+function handleProjectEdit(projectId) {
+    console.log('✏️ Editando proyecto:', projectId);
+    
+    // Buscar el proyecto en el estado actual
+    const project = [...appState.projects.active, ...appState.projects.completed]
+        .find(p => p.id == projectId);
+    
+    if (project) {
+        openProjectModal(project);
+    } else {
+        showToast('❌ Proyecto no encontrado', 'error');
+    }
+}
+
+async function handleProjectDelete(projectId) {
+    const project = [...appState.projects.active, ...appState.projects.completed]
+        .find(p => p.id == projectId);
+    
+    if (!project) {
+        showToast('❌ Proyecto no encontrado', 'error');
+        return;
+    }
+    
+    const confirmed = confirm(`¿Estás seguro de que quieres eliminar el proyecto "${project.name}"?\n\nEsta acción no se puede deshacer.`);
+    
+    if (!confirmed) return;
+    
+    const loadingToast = showLoadingToast('Eliminando proyecto...');
+    
+    try {
+        const response = await projectAPI.deleteProject(projectId);
+        
+        if (response.success) {
+            hideLoadingToast();
+            showToast('✅ Proyecto eliminado correctamente', 'success');
+            
+            // Recargar datos
+            await loadInitialData();
+        } else {
+            hideLoadingToast();
+            showToast(`❌ Error: ${response.error}`, 'error');
+        }
+    } catch (error) {
+        hideLoadingToast();
+        console.error('Error al eliminar proyecto:', error);
+        showToast('❌ Error de conexión al eliminar', 'error');
+    }
+}
+
+function handleProjectShare(projectId) {
+    const project = [...appState.projects.active, ...appState.projects.completed]
+        .find(p => p.id == projectId);
+    
+    if (!project) return;
+    
+    const shareUrl = `${window.location.origin}/proyectos/${projectId}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: `Proyecto: ${project.name}`,
+            text: project.description,
+            url: shareUrl
+        });
+    } else {
+        // Fallback: copiar al portapapeles
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('🔗 Enlace copiado al portapapeles', 'success');
+        }).catch(() => {
+            showToast('❌ No se pudo copiar el enlace', 'error');
+        });
+    }
+}
+
+/**
+ * FUNCIÓN PARA REFRESCAR DATOS DE PROYECTOS
+ */
+async function refreshProjectsData(silent = false) {
+    if (!silent) {
+        showLoadingState(true);
+    }
+    
+    try {
+        const response = await projectAPI.getAllProjects();
+        
+        if (response.success) {
+            await processProjectsData(response.data);
+            if (!silent) {
+                updateConnectionStatus('connected');
+            }
+        } else {
+            throw new Error(response.error || 'Error al obtener proyectos');
+        }
+    } catch (error) {
+        console.error('Error al refrescar datos:', error);
+        if (!silent) {
+            updateConnectionStatus('error');
+            showToast('⚠️ Error al actualizar datos', 'warning');
+        }
+    } finally {
+        if (!silent) {
+            showLoadingState(false);
+        }
+    }
+}
+
+console.log('✅ Funciones auxiliares de App.js cargadas');
+    

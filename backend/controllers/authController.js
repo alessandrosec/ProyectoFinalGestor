@@ -72,8 +72,22 @@ exports.getRegister = (req, res) => {
 };
 
 exports.getIndex = (req, res) => {
-    res.render('Index')
-}
+    // Verificar si el usuario está logueado
+    if (!req.session.usuario) {
+        req.session.mensaje = 'Necesitas iniciar sesión para acceder al dashboard.';
+        return res.redirect('/');
+    }
+    
+    // Renderizar el dashboard con datos del usuario
+    res.render('index', {
+        csrfToken: req.session.csrfToken,
+        usuario: req.session.usuario,
+        mensaje: req.session.mensaje
+    });
+    
+    // Limpiar mensaje después de mostrarlo
+    req.session.mensaje = null;
+};
 
 //Valida al usuario desde la base de datos
 exports.postLogin = async (req, res, next) => {

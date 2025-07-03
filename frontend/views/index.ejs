@@ -5,10 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Tareas</title>
     
+    <!-- 🔥 CSRF Token para API requests -->
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet"
+    <link href="/css/estilos.css" rel="stylesheet">
+    
+    <!-- 🔥 Variables globales para JavaScript -->
+    <script>
+        window.csrfToken = '<%= csrfToken %>';
+        window.currentUser = {
+            id: <%= usuario ? usuario.id : 'null' %>,
+            name: '<%= usuario ? usuario.nombre : '' %>',
+            photo: '<%= usuario ? usuario.foto : '' %>'
+        };
+        window.apiBaseUrl = '/api';
+    </script>
 </head>
 <body>
     <!-- Contenedor principal de la aplicación -->
@@ -20,6 +34,15 @@
                     <i class="bi bi-kanban-fill me-2"></i>
                     Gestor de Proyectos
                 </h1>
+                <!-- 🔥 Información del usuario -->
+                <% if (usuario) { %>
+                <small class="text-white-50">
+                    Bienvenido, <%= usuario.nombre %>
+                    <a href="/logout" class="text-white ms-3">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </a>
+                </small>
+                <% } %>
             </div>
             <div class="col-md-4 d-flex justify-content-end align-items-center">
                 <!-- Barra de búsqueda en tiempo real -->
@@ -42,6 +65,10 @@
                     <i class="bi bi-plus-circle me-1"></i>
                     Crear Proyecto
                 </button>
+                <!-- 🔥 Botón refresh manual -->
+                <button class="btn btn-outline-light ms-2" id="refreshBtn" title="Actualizar datos">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
             </div>
         </header>
 
@@ -53,6 +80,7 @@
                     <h3 class="section-title">
                         <i class="bi bi-check-circle-fill me-2"></i>
                         Proyectos Terminados
+                        <span class="badge bg-success ms-2" id="completedCount">0</span>
                     </h3>
                     
                     <!-- Lista de proyectos terminados -->
@@ -86,6 +114,7 @@
                     <h3 class="section-title">
                         <i class="bi bi-clock-fill me-2"></i>
                         Proyectos en Proceso
+                        <span class="badge bg-primary ms-2" id="activeCount">0</span>
                     </h3>
                     
                     <!-- Lista de proyectos en proceso -->
@@ -129,7 +158,7 @@
         </main>
     </div>
 
-    <!-- Modal para crear/editar proyecto (se implementará en futuras versiones) -->
+    <!-- 🔥 Modal para crear/editar proyecto -->
     <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -138,22 +167,59 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario de proyecto se implementará aquí -->
-                    <p class="text-center py-4">
-                        <i class="bi bi-tools display-4 d-block mb-2"></i>
-                        Formulario de creación en desarrollo...
-                    </p>
+                    <form id="projectForm">
+                        <input type="hidden" id="projectId" name="projectId">
+                        
+                        <div class="mb-3">
+                            <label for="projectName" class="form-label">Nombre del Proyecto *</label>
+                            <input type="text" class="form-control" id="projectName" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="projectDescription" class="form-label">Descripción *</label>
+                            <textarea class="form-control" id="projectDescription" name="description" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="projectStartDate" class="form-label">Fecha de Inicio</label>
+                                <input type="date" class="form-control" id="projectStartDate" name="startDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="projectEndDate" class="form-label">Fecha de Entrega *</label>
+                                <input type="date" class="form-control" id="projectEndDate" name="endDate" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 mt-3">
+                            <label for="projectStatus" class="form-label">Estado</label>
+                            <select class="form-select" id="projectStatus" name="status">
+                                <option value="en_proceso">En Proceso</option>
+                                <option value="terminado">Terminado</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveProjectBtn">Guardar Proyecto</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- 🔥 Indicador de estado de conexión -->
+    <div class="connection-status d-none" id="connectionStatus">
+        <i class="bi bi-wifi me-1"></i>
+        <span id="connectionText">Conectado</span>
     </div>
 
     <!-- Toast para notificaciones -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="mainToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
-                <i class="bi bi-info-circle-fill me-2 text-primary"></i>
-                <strong class="me-auto">Notificación</strong>
+                <i class="bi bi-info-circle-fill me-2 text-primary" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body" id="toastMessage">
@@ -166,7 +232,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Scripts de la aplicación -->
-    <script src="api.js"></script>
-    <script src="app.js"></script>
+    <script src="/js/API.js"></script>
+    <script src="/js/App.js"></script>
 </body>
 </html>

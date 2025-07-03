@@ -35,9 +35,11 @@ app.set('views', path.join(__dirname,'frontend', 'views'));
 
 // Rutas
 const authRoutes = require('./backend/routes/auth'); //Importa la ruta de autenticacion 
-app.use('/', authRoutes);
+const apiRoutes = require ('./backend/routes/api')
+
 app.use('/', authRoutes);
 app.use('/', projectRoutes); // Nuevo: Usar las rutas de proyectos
+app.use('/api', apiRoutes);// Línea Nueva
 
 // Middleware para manejo de errores 
 app.use((err, req, res, next) => {
